@@ -42,6 +42,14 @@
         <artifactId>tomcat-jsp-api</artifactId>
         <version>${tomcat.version}</version>
     </dependency>
+    <!--POSTGRES-->
+    <dependency>
+	<groupId>postgresql</groupId>
+	<artifactId>postgresql</artifactId>
+	<version>9.1-901-1.jdbc4</version>
+    </dependency>
+
+    <!--END-POSTGRES-->
   </dependencies>
   <build>
     <finalName>embeddedTomcatSample</finalName>
