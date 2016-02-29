@@ -15,13 +15,29 @@ import java.sql.SQLException;
  * @author carlos
  */
 public class Connection {
+    public static final boolean IS_PRODUCTION = true;
     public static java.sql.Connection getConnection() throws URISyntaxException, SQLException {
-        URI dbUri = new URI(System.getenv("DATABASE_URL"));
+        java.sql.Connection conn = null;
+        
+        try{
+            if(IS_PRODUCTION){
+                URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
-        String username = dbUri.getUserInfo().split(":")[0];
-        String password = dbUri.getUserInfo().split(":")[1];
-        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+                String username = dbUri.getUserInfo().split(":")[0];
+                String password = dbUri.getUserInfo().split(":")[1];
+                String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
-        return DriverManager.getConnection(dbUrl, username, password);
+                conn = DriverManager.getConnection(dbUrl, username, password);
+            } else {
+                conn = DriverManager.getConnection(
+                        ConnectionSettings.HOST+ConnectionSettings.DB_NAME,
+                        ConnectionSettings.USERNAME,
+                        ConnectionSettings.PASSWORD);
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return conn;
     }
 }
