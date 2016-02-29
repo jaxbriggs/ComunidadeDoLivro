@@ -28,12 +28,12 @@ public class Connection {
                 String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
                 conn = DriverManager.getConnection(dbUrl, username, password);
-            } else {
+            } /*else {
                 conn = DriverManager.getConnection(
                         ConnectionSettings.HOST+ConnectionSettings.DB_NAME,
                         ConnectionSettings.USERNAME,
                         ConnectionSettings.PASSWORD);
-            }
+            }**/
         } catch(SQLException e) {
             e.printStackTrace();
         }
