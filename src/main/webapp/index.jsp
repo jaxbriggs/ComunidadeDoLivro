@@ -18,21 +18,17 @@
         <div class = "container" style = "background-color: white">
             <div class = "row" style="margin: 0 -30px;">
                 <div class = "col-xs-12" >
-                    <table style="border:0; width: 100%;">
-                        <tr>
-                            <td style="padding-top: 2%; padding-left: 5%;"><a href="index.jsp"><img src="custom-resources/img/logo.png" width="200" height="200"/></a></td>
-                            <td style="text-align: center"><h1 id="title">Comunidade do Livro</h1></td>
-                        </tr>
-                    </table>
+                    <div class="col-sm-3" style="padding-top: 2%; padding-left: 5%;"><a href="index.jsp"><img src="custom-resources/img/logo.png" width="200" height="200"/></a></div>
+                    <div class="col-sm-9" style="text-align: center; padding-top: 5%;"><h1 id="title">Comunidade do Livro</h1></div>
                 </div>
             </div>
                 
             <!--LOGIN-FORM-->    
             <div class = "row" style="padding-top: 3%; margin: 0 -30px;">
-                <div class = "col-xs-6 col-md-offset-3" >
+                <div class = "col-xs-6 col-xs-offset-3" >
                    <div class="panel panel-default">
                        <div class="panel-heading" id="signInUpFormTitle"></div>
-                      <div class="panel-body">
+                       <div class="panel-body">
                         <form id="signInForm">
                             <fieldset class="form-group">
                               <label for="login">Login</label>
@@ -44,7 +40,7 @@
                             </fieldset>
                             <p style="text-align: center;"><button type="submit" class="btn btn-primary">Entrar</button></p>
                         </form>
-                        <form id="signUpForm">
+                        <form id="signUpForm" method="POST" action="${pageContext.request.contextPath}/cadastrar">
                             <legend>Cadastro Básico</legend>
                              <fieldset class="form-group">
                                 <label for="login">Eu sou uma: </label>
@@ -94,11 +90,15 @@
                                 <label for="cep">CEP</label>
                               <input type="text" class="form-control" id="cep" placeholder="Digite o cep">
                             </fieldset>
-                            <fieldset class="form-group">
+                            <fieldset class="form-group col-xs-9" style="padding: 0;">
                                 <label for="cep">Rua</label>
                                 <input type="text" class="form-control" id="rua" size="60">
                             </fieldset>
-                            <fieldset class="form-group">
+                            <fieldset class="form-group col-xs-3" style="padding: 0 2%;">
+                                <label for="numero">Número</label>
+                                <input type="number" class="form-control" id="numero" size="60">
+                            </fieldset>
+                            <fieldset class="form-group col-xs-12" style="padding: 0;">
                                 <label for="bairro">Bairro</label>
                                 <input type="text" class="form-control" id="bairro" size="40">
                             </fieldset>

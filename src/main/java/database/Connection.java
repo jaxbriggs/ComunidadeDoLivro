@@ -15,7 +15,7 @@ import java.sql.SQLException;
  * @author carlos
  */
 public class Connection {
-    public static final boolean IS_PRODUCTION = true;
+    public static final boolean IS_PRODUCTION = false;
     public static java.sql.Connection getConnection() throws URISyntaxException, SQLException {
         java.sql.Connection conn = null;
         
@@ -28,12 +28,12 @@ public class Connection {
                 String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
                 conn = DriverManager.getConnection(dbUrl, username, password);
-            } /*else {
+            } else {
                 conn = DriverManager.getConnection(
                         ConnectionSettings.HOST+ConnectionSettings.DB_NAME,
                         ConnectionSettings.USERNAME,
                         ConnectionSettings.PASSWORD);
-            }**/
+            }
         } catch(SQLException e) {
             e.printStackTrace();
         }
