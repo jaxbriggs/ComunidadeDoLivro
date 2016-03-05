@@ -47,13 +47,13 @@
                                 <div class="radio-inline">
                                     <label>
                                       <input type="radio" name="pessoa-inst" id="pessoaRadio" value="pessoa" checked>
-                                      Pessoa física
+                                      Pessoa Física
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                   <label>
                                     <input type="radio" name="pessoa-inst" id="optionsRadios2" value="inst">
-                                    Instituição
+                                    Pessoa Jurídica
                                   </label>
                                 </div>
                             </fieldset>
