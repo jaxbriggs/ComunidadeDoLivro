@@ -29,12 +29,10 @@ public class Connection {
 
                 conn = DriverManager.getConnection(dbUrl, username, password);
             } else {
-                /*
                 conn = DriverManager.getConnection(
                         ConnectionSettings.HOST+ConnectionSettings.DB_NAME,
                         ConnectionSettings.USERNAME,
                         ConnectionSettings.PASSWORD);
-                */            
             }
         } catch(SQLException e) {
             e.printStackTrace();

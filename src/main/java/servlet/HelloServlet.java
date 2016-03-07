@@ -27,9 +27,6 @@ public class HelloServlet extends HttpServlet {
         
         ServletOutputStream out = resp.getOutputStream();
         
-        User u = new User();
-        u.setName("Carlos");
-        
         try {
             Connection conn = database.Connection.getConnection();
             out.write("Connection succeeded!".getBytes());
@@ -38,8 +35,7 @@ public class HelloServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(HelloServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        out.write(("hello "+u.getName()).getBytes());
+                
         out.flush();
         out.close();
     }

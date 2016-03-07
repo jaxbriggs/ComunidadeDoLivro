@@ -32,83 +32,87 @@
                         <form id="signInForm">
                             <fieldset class="form-group">
                               <label for="login">Login</label>
-                              <input type="text" class="form-control" id="login" placeholder="Digite o login" required>
+                              <input type="text" class="form-control" id="login" name="login" placeholder="Digite o login" required/>
                             </fieldset>
                             <fieldset class="form-group">
                               <label for="password">Senha</label>
-                              <input type="password" class="form-control" id="password" placeholder="Senha" required>
+                              <input type="password" class="form-control" id="password" name="password" placeholder="Senha" required/>
                             </fieldset>
                             <p style="text-align: center;"><button type="submit" class="btn btn-primary">Entrar</button></p>
                         </form>
-                        <form id="signUpForm" method="POST" action="${pageContext.request.contextPath}/cadastrar">
+                        <form id="signUpForm" method="post" action="${pageContext.request.contextPath}/cadastrarUsuario"/>
                             <legend>Cadastro Básico</legend>
                              <fieldset class="form-group">
                                 <label for="login">Eu sou uma: </label>
                                 <div class="radio-inline">
                                     <label>
-                                      <input type="radio" name="pessoa-inst" id="pessoaRadio" value="pessoa" checked>
+                                      <input type="radio" name="pessoa-inst" id="pessoaRadio" name="pessoaRadio" value="pessoa" checked/>
                                       Pessoa física
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                   <label>
-                                    <input type="radio" name="pessoa-inst" id="optionsRadios2" value="inst">
+                                    <input type="radio" name="pessoa-inst" id="optionsRadios2" name="optionsRadios2" value="inst"/>
                                     Instituição
                                   </label>
                                 </div>
                             </fieldset>
                             <fieldset class="form-group">
                                 <label for="name">Nome <span style="color: red">*</span></label>
-                                <input type="text" class="form-control" id="name" placeholder="Digite o nome" required checked="checked">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Digite o nome" required checked="checked"/>
                             </fieldset>
                             <fieldset class="form-group">
                                 <label for="userEmail">Email <span style="color: red">*</span></label>
-                                <input type="email" class="form-control" id="userEmail" placeholder="Digite o email" required>
+                                <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="Digite o email" required/>
                             </fieldset>
                             <fieldset class="form-group">
                                 <label for="userLogin">Login de usuário <span style="color: red">*</span></label>
-                              <input type="text" class="form-control" id="userLogin" placeholder="Digite o login" required>
+                              <input type="text" class="form-control" id="userLogin" name="userLogin" placeholder="Digite o login" required/>
                             </fieldset>
                             <fieldset class="form-group">
                               <label for="signInPassword">Senha <span style="color: red">*</span></label>
-                              <input type="password" class="form-control" id="signInPassword" placeholder="Senha" required>
+                              <input type="password" class="form-control" id="signInPassword" name="signInPassword" placeholder="Senha" required/>
                             </fieldset>
                             <fieldset class="form-group">
                               <label for="signInPassword2">Confirmação da senha <span style="color: red">*</span></label>
-                              <input type="password" class="form-control" id="signInPassword2" placeholder="Senha" required>
+                              <input type="password" class="form-control" id="signInPassword2" name="signInPassword2" placeholder="Senha" required/>
                             </fieldset>
                             <legend>Cadastro Avançado</legend>
                             <fieldset class="form-group">
                                 <label id="lblCpfOrCnpj" for="cpfOrCnpj"></label>
-                              <input type="text" class="form-control" id="cpfOrCnpj" placeholder="" />
+                              <input type="text" class="form-control" id="cpfOrCnpj" name="cpfOrCnpj" placeholder="" />
                             </fieldset>
-                            <fieldset class="form-group">
+                            <fieldset class="form-group col-xs-6" style="padding: 0;">
                                 <label for="tel">Telefone</label>
-                              <input type="text" class="form-control" id="tel" placeholder="Digite o telefone">
+                              <input type="text" class="form-control" id="tel" name="tel" placeholder="Digite o telefone" />
                             </fieldset>
-                            <fieldset class="form-group">
+                            <fieldset class="form-group col-xs-6" style="padding: 0 0 0 2%;">
+                                <label for="cel">Celular</label>
+                              <input type="text" class="form-control" id="cel" name="cel" placeholder="Digite o celular"/>
+                            </fieldset>
+                            <fieldset class="form-group col-xs-12" style="padding: 0;">
                                 <label for="cep">CEP</label>
-                              <input type="text" class="form-control" id="cep" placeholder="Digite o cep">
+                              <input type="text" class="form-control" id="cep" name="cep" placeholder="Digite o cep"/>
                             </fieldset>
                             <fieldset class="form-group col-xs-9" style="padding: 0;">
-                                <label for="cep">Rua</label>
-                                <input type="text" class="form-control" id="rua" size="60">
+                                <label for="rua">Rua</label>
+                                <input type="text" class="form-control" id="rua" name="rua" size="60"/>
                             </fieldset>
                             <fieldset class="form-group col-xs-3" style="padding: 0 2%;">
                                 <label for="numero">Número</label>
-                                <input type="number" class="form-control" id="numero" size="60">
+                                <input type="number" class="form-control" id="numero" name="numero" size="60"/>
                             </fieldset>
                             <fieldset class="form-group col-xs-12" style="padding: 0;">
                                 <label for="bairro">Bairro</label>
-                                <input type="text" class="form-control" id="bairro" size="40">
+                                <input type="text" class="form-control" id="bairro" name="bairro" size="40"/>
                             </fieldset>
                             <fieldset class="form-group col-xs-10" style="padding: 0;">
                                 <label for="cidade">Cidade</label>
-                                <input type="text" class="form-control" id="cidade" size="40">
+                                <input type="text" class="form-control" id="cidade" name="cidade" size="40"/>
                             </fieldset>
                             <fieldset class="form-group col-xs-2">
                                 <label for="uf">Estado</label>
-                                <input type="text" class="form-control" id="uf" size="2">
+                                <input type="text" class="form-control" id="uf" name="uf" size="2"/>
                             </fieldset>
                             <p class="col-xs-12" style="text-align: center;"><button type="submit" class="btn btn-primary">Cadastrar</button></p>
                         </form>
