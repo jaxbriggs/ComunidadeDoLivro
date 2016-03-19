@@ -47,7 +47,7 @@
                                 <div class="radio-inline">
                                     <label>
                                       <input type="radio" name="pessoa-inst" id="pessoaRadio" name="pessoaRadio" value="pessoa" checked/>
-                                      Pessoa física
+                                      Pessoa Física
                                     </label>
                                 </div>
                                 <div class="radio-inline">
