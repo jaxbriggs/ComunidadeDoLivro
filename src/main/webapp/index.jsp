@@ -121,16 +121,7 @@
                    </div>
                 </div>
             </div>
-            
-            <!--FOOTER-->   
-            <div class = "row" style="text-align: center">
-                <footer class="footer">
-                    <div class="container">
-                      <p class="text-muted"><b>Comunidade do livro</b></p>
-                      <p class="text-muted">Desenvolvido por: <i>Carlos Henrique & Augusto Soares</i></p>
-                    </div>
-                </footer>
-            </div>
+            <%@include file="page_components/footer.html" %>
         </div>
     </body>
 </html>
