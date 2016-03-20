@@ -25,5 +25,16 @@ $("#menu-toggle").click(function(e) {
         }
       }
     );
-  }
-$(document).ready(function() {initMenu();});
+}
+
+//Minhas funcoes
+function getPick(){
+  $('#pick').val("sair");
+  $('#menuPickSenderForm').submit();
+};
+    
+$(document).ready(function() {
+    initMenu();
+});
+
+

@@ -88,7 +88,7 @@ $(document).ready(function(){
     
     /*PREECHIMENTO DO ENDERECO PELO CEP*/
     function limpa_formulario_cep() {
-    // Limpa valores do formulário de cep.
+    // Limpa valores do formulario de cep.
     $("#rua").val("");
     $("#bairro").val("");
     $("#cidade").val("");
@@ -99,7 +99,7 @@ $(document).ready(function(){
     //Quando o campo cep perde o foco.
     $("#cep").blur(function() {
 
-        //Nova variável "cep" somente com dígitos.
+        //Nova variável "cep" somente com digitos.
         var cep = $(this).val().replace(/\D/g, '');
 
         //Verifica se campo cep possui valor informado.
@@ -130,18 +130,18 @@ $(document).ready(function(){
                     else {
                         //CEP pesquisado não foi encontrado.
                         limpa_formulario_cep();
-                        alert("CEP não encontrado.");
+                        alert("CEP n�o encontrado.");
                     }
                 });
             } //end if.
             else {
                 //cep é inválido.
                 limpa_formulario_cep();
-                alert("Formato de CEP inválido.");
+                alert("Formato de CEP inv�ido.");
             }
         } //end if.
         else {
-            //cep sem valor, limpa formulário.
+            //cep sem valor, limpa formul�rio.
             limpa_formulario_cep();
         }
     })

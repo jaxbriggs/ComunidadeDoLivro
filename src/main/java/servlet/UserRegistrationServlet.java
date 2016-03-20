@@ -51,7 +51,7 @@ public class UserRegistrationServlet extends HttpServlet {
         byte[] senha = null;
         try {
             MessageDigest d = MessageDigest.getInstance("MD5");
-            senha = d.digest(request.getParameter("signInPassword").getBytes(StandardCharsets.UTF_8));
+            senha = d.digest(request.getParameter("signInPassword").getBytes(StandardCharsets.ISO_8859_1));
         } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
         }

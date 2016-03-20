@@ -10,6 +10,7 @@ package model;
  * @author carlos
  */
 public class User {
+    private int id;
     private String name;
     private Endereco endereco;
     private String email;
@@ -22,7 +23,11 @@ public class User {
     private String celular;
     private String login;
 
-    public User(String name, Endereco endereco, String email, String senha, boolean isAdmin, boolean isAtivo, String cpf, String cnpj, String telefone, String celular, String login) {
+    public User() {
+    }
+
+    public User(int id, String name, Endereco endereco, String email, String senha, boolean isAdmin, boolean isAtivo, String cpf, String cnpj, String telefone, String celular, String login) {
+        this.id = id;
         this.name = name;
         this.endereco = endereco;
         this.email = email;
@@ -34,6 +39,29 @@ public class User {
         this.telefone = telefone;
         this.celular = celular;
         this.login = login;
+    }
+    
+    public User(String name, Endereco endereco, String email, String senha, boolean isAdmin, boolean isAtivo, String cpf, String cnpj, String telefone, String celular, String login) {
+        this.id = id;
+        this.name = name;
+        this.endereco = endereco;
+        this.email = email;
+        this.senha = senha;
+        this.isAdmin = isAdmin;
+        this.isAtivo = isAtivo;
+        this.cpf = cpf;
+        this.cnpj = cnpj;
+        this.telefone = telefone;
+        this.celular = celular;
+        this.login = login;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -123,4 +151,7 @@ public class User {
     public void setLogin(String login) {
         this.login = login;
     }
+    
+    
+    
 }
