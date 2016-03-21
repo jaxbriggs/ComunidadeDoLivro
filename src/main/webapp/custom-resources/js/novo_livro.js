@@ -22,9 +22,22 @@ $(document).ready(function() {
         $('#imgCapa').attr('src', '');
     });
     
+    $("#novo_livro_form").submit(function( event ) {
+        event.preventDefault();
+        
+        /*var posting = $.post('/cadastrar_livro', $("#signInForm").serialize());
+
+        posting.done(function( data ) {
+            if(data !== null){
+                $.redirect("/home.jsp", data);
+            } else {
+                $('#myModal').modal('toggle');
+            }
+        });*/
+        
+    });
+    
     //Faz a requisicao do servlet que cadastra o livro
-    
-    
     
      /*$(function() {
         $( "#publicacao" ).datepicker();
