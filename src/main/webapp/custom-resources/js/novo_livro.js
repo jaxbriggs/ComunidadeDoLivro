@@ -40,7 +40,6 @@ $(document).ready(function() {
 });
 
 
-
 //Funcao que pega os dados retonados da api
 function setLivroDataByISBN(data){
     
@@ -95,5 +94,6 @@ function getLivrosByISBN(texto){
 };
 
 //Funcao que cadastra livro
+
 
 
