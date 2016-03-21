@@ -46,16 +46,16 @@
         <link rel="stylesheet" type="text/css" href="custom-resources/font-awesome-4.5.0/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="custom-resources/css/general.css">
         <link rel="stylesheet" type="text/css" href="custom-resources/css/sidebar.css">
-        <title>Página Inicial</title>
+        <title>Comunidade do Livro</title>
     </head>
     
     <body>
         <%@include file="page_components/sidebar.html"%>
         <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <% 
-                //TODO
-            %>
+        <div class="container" id="page-content-wrapper-container" style = "background-color: white">
+            <div class = "row" id="page-content-wrapper">
+                
+            </div>
         </div>
         <!-- /#page-content-wrapper -->
         <!-- /#wrapper -->

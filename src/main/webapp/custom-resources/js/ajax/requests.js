@@ -1,18 +1,17 @@
-$(document).ready(function(){
-    
-        //Faz requisicao do login
-        $("#signInForm").submit(function( event ) {
-            event.preventDefault();
+$(document).ready(function() {   
+    //Faz requisicao do login
+    $("#signInForm").submit(function( event ) {
+        event.preventDefault();
 
-            var posting = $.post('/login', $("#signInForm").serialize());
+        var posting = $.post('/login', $("#signInForm").serialize());
 
-            posting.done(function( data ) {
-                if(data !== null){
-                    $.redirect("/home.jsp", data);
-                } else {
-                    $('#myModal').modal('toggle');
-                }
-            });
+        posting.done(function( data ) {
+            if(data !== null){
+                $.redirect("/home.jsp", data);
+            } else {
+                $('#myModal').modal('toggle');
+            }
         });
-    
+    });
 });
+
