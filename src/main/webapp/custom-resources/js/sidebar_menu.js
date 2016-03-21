@@ -28,9 +28,21 @@ $("#menu-toggle").click(function(e) {
 }
 
 //Minhas funcoes
-function getPick(){
-  $('#pick').val("sair");
+
+//Pega o item do menu clicado e set no campo hidden
+function setPick(pick){
+    $('#pick').val(pick);
+};
+
+//Enviar a escolha do menu
+function submitPickSenderForm(){  
   $('#menuPickSenderForm').submit();
+};
+
+function loadPageByPickedMenu(element, pageLoadedPath){
+    $('.active').removeClass('active');
+    $(element).addClass('active');
+    $("#page-content-wrapper").html('<object data="' + pageLoadedPath + '" class="col-xs-12" id="object_data" >');
 };
     
 $(document).ready(function() {

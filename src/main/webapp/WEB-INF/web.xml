@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+    <servlet>
+        <servlet-name>configuracoes</servlet-name>
+        <jsp-file>/WEB-INF/configuracoes.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>meus_livros</servlet-name>
+        <jsp-file>/WEB-INF/meus_livros.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>meus_pedidos</servlet-name>
+        <jsp-file>/WEB-INF/meus_pedidos.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>meus_recebimentos</servlet-name>
+        <jsp-file>/WEB-INF/meus_recebimentos.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>minhas_doacoes</servlet-name>
+        <jsp-file>/WEB-INF/minhas_doacoes.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>pedidos_de_outros</servlet-name>
+        <jsp-file>/WEB-INF/pedidos_de_outros.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>sendo_doados</servlet-name>
+        <jsp-file>/WEB-INF/sendo_doados.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>sendo_pedidos</servlet-name>
+        <jsp-file>/WEB-INF/sendo_pedidos.jsp</jsp-file>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>usuarios</servlet-name>
+        <jsp-file>/WEB-INF/usuarios.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>configuracoes</servlet-name>
+        <url-pattern>/configuracoes</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>meus_livros</servlet-name>
+        <url-pattern>/meus_livros</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>meus_pedidos</servlet-name>
+        <url-pattern>/meus_pedidos</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>meus_recebimentos</servlet-name>
+        <url-pattern>/meus_recebimentos</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>minhas_doacoes</servlet-name>
+        <url-pattern>/minhas_doacoes</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>pedidos_de_outros</servlet-name>
+        <url-pattern>/pedidos_de_outros</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>sendo_doados</servlet-name>
+        <url-pattern>/sendo_doados</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>sendo_pedidos</servlet-name>
+        <url-pattern>/sendo_pedidos</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>usuarios</servlet-name>
+        <url-pattern>/usuarios</url-pattern>
+    </servlet-mapping>
+</web-app>
