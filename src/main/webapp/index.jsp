@@ -86,11 +86,11 @@
                             </fieldset>
                             <fieldset class="form-group">
                                 <label for="name">Nome <span style="color: red">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Digite o nome" required checked="checked"/>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Digite o nome" maxlength="50" required checked="checked"/>
                             </fieldset>
                             <fieldset class="form-group">
                                 <label for="userEmail">Email <span style="color: red">*</span></label>
-                                <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="Digite o email" required/>
+                                <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="Digite o email" maxlength="50" required/>
                             </fieldset>
                             <fieldset class="form-group">
                                 <label for="userLogin">Login de usuário <span style="color: red">*</span></label>
