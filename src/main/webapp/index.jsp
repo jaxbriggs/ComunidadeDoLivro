@@ -107,7 +107,7 @@
                             <legend>Cadastro Avançado</legend>
                             <fieldset class="form-group">
                                 <label id="lblCpfOrCnpj" for="cpfOrCnpj"></label>
-                              <input type="text" class="form-control" id="cpfOrCnpj" name="cpfOrCnpj" placeholder="" />
+                              <input type="text" class="form-control" id="cpfOrCnpj" name="cpfOrCnpj" placeholder="" maxlength="" />
                             </fieldset>
                             <fieldset class="form-group col-xs-6" style="padding: 0;">
                                 <label for="tel">Telefone</label>
