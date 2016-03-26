@@ -1,4 +1,6 @@
 $(document).ready(function(){
+
+
     
     //LABEL
     var lblCpfOrCnpj = $("#lblCpfOrCnpj");
@@ -20,6 +22,7 @@ $(document).ready(function(){
     var cpfOrCnpj = $("#cpfOrCnpj");
     var tel = $("#tel");
     
+    /*
     function limparCampos(){
         login.val('');
         password.val('');
@@ -40,7 +43,7 @@ $(document).ready(function(){
     
     $("#signUpForm").ready(function (){
         $("#signUpForm").css("display", "none")
-    })
+    })*/
     
     //Altera o label do campo de acordo com a escolha inicial
     pessoaInstRadio.ready(function (){
@@ -65,6 +68,7 @@ $(document).ready(function(){
     });
     
     
+    /*
     //Altera o form exibido conforme o link de logar/cadastrar e clicado 
     $("#signInOrUp").text("Clique para se cadastrar");
     $("#signInUpFormTitle").text("Faça o login");
@@ -83,7 +87,7 @@ $(document).ready(function(){
             limparCampos();
         }
     })
-    
+    */
     
     
     /*PREECHIMENTO DO ENDERECO PELO CEP*/

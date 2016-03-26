@@ -33,65 +33,65 @@
                   <h4 class="modal-title" id="exampleModalLabel">Cadastro de Livro</h4>
                 </div>
                 <div class="modal-body">
-                  <form id="novo_livro_form">
+                  <form id="novo_livro_form" enctype="multipart/form-data">
                     <div class="row">  
                         <div class="form-group col-xs-6">
                           <label for="isbn" class="control-label">ISBN:</label>
-                          <input type="text" class="form-control" id="isbn">
+                          <input type="text" class="form-control" id="isbn" name="isbn">
                         </div>
                         <div class='form-group col-xs-6'>
                             <label for="publicacao" class="control-label">Data de Publicação:</label>                            
-                            <input type="text" class="form-control" id="publicacao">
+                            <input type="text" class="form-control" id="publicacao" name="publicacao">
                         </div>
                     </div>
                     <div class='row'>
                         <div class="form-group col-xs-12">
                           <label for="titulo" class="control-label">Título:</label>
-                          <input type="text" class="form-control" id="titulo">
+                          <input type="text" class="form-control" id="titulo" name="titulo">
                         </div>
                     </div>
                     <div class='row'>
                         <div class="form-group col-xs-6">
                           <label for="autor" class="control-label">Autor:</label>
-                          <input type="text" class="form-control" id="autor">
+                          <input type="text" class="form-control" id="autor" name="autor">
                         </div>
                         <div class="form-group col-xs-6">
                           <label for="editora" class="control-label">Editora:</label>
-                          <input type="text" class="form-control" id="editora">
+                          <input type="text" class="form-control" id="editora" name="editora">
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xs-12">
                             <label for="descricao" class="control-label">Descrição:</label>
-                            <textarea class="form-control" id="descricao"></textarea>
+                            <textarea class="form-control" id="descricao" name="descricao"></textarea>
                           </div>
                     </div>
                     <div class='row'>
                         <div class="form-group col-xs-5">
                           <label for="genero" class="control-label">Gênero:</label>
-                          <input type="text" class="form-control" id="genero">
+                          <input type="text" class="form-control" id="genero" name="genero">
                         </div>
                         <div class="form-group col-xs-5">
                           <label for="idioma" class="control-label">Idioma:</label>
-                          <input type="text" class="form-control" id="idioma">
+                          <input type="text" class="form-control" id="idioma" name="idioma">
                         </div>
                         <div class="form-group col-xs-2">
                             <label for="qdtPaginas" class="control-label">Páginas:</label>
-                          <input type="text" class="form-control" id="qdtPaginas">
+                          <input type="text" class="form-control" id="qtdPaginas" name="qtdPaginas">
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-xs-3">
-                            <img id="imgCapa" src="" />                            
+                            <img id="imgCapa" src="" height="211px" width="128px" />                            
                             </div>
                         <div class="form-group col-xs-9">
                             <label for="capa" class="control-label">Imagem de Capa:</label>
-                            <input type="file" id="capa">
+                            <input type="file" id="capaPicker"/>
                             <p class="help-block">Selecione a foto da capa</p>
                         </div>
                     </div>
                     <!--campo hidden para enviar a capa-->
-                    <input type="hidden" id="capa">
+                    <input type="hidden" id="capa" name="capa" value="" />
                   </form>
                 </div>
                 <div class="modal-footer">

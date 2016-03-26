@@ -7,7 +7,7 @@ $(document).ready(function() {
 
         posting.done(function( data ) {
             if(data !== null){
-                $.redirect("/home.jsp", data);
+                $.redirect("/index.jsp", data);
             } else {
                 $('#myModal').modal('toggle');
             }
