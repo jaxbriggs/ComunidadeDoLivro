@@ -67,39 +67,22 @@ $(document).ready(function(){
     
     //Altera o form exibido conforme o link de logar/cadastrar e clicado 
     $("#signInOrUp").text("Clique para se cadastrar");
-    $("#signInUpFormTitle").text("Faï¿½a o login");
+    $("#signInUpFormTitle").text("Faça o login");
     $("#signInOrUp").click(function(){
         if($("#signInForm").css("display") != "none"){
-            $("#signInUpFormTitle").text("Faï¿½a o cadastro");
+            $("#signInUpFormTitle").text("Faça o cadastro");
             $("#signInOrUp").text("Clique para fazer o login");
             $("#signInForm").css("display","none");
             $("#signUpForm").css("display","inline");
             limparCampos();
         } else {
-            $("#signInUpFormTitle").text("Faï¿½a o login");
+            $("#signInUpFormTitle").text("Faça o login");
             $("#signInOrUp").text("Clique para se cadastrar");
             $("#signInForm").css("display","inline");
             $("#signUpForm").css("display","none");
             limparCampos();
         }
     })
-    
-    
-    /*Valida o campo name conforme o banco*/
-    $('#name').bind('keypress', function (event){//ao pressionar o teclado no camo name, aciona a funÃ§Ã£o
-       var validacaracter = /^[a-zA-Z \b]$/;// new RegExp("^[a-zA-Z \b]+$") constroi a expressao regular que identifica letra e espaÃ§o
-       var caractercapturado = event.keyCode || event.which; //captura aÃ§Ã£o do mouse ou teclado
-       //lista de keyCode, 9 do tab e 37 a 40 setas        
-        if (!validacaracter.test(String.fromCharCode(caractercapturado)) && caractercapturado != 9 
-                                 && caractercapturado != 37 && caractercapturado != 38
-                                 && caractercapturado != 39 && caractercapturado != 40){ 
-        //event.preventDefault();
-        alert("O nome deve conter apenas letras.");
-        return false;
-        }
-    });
-
-    
     
     
     
@@ -147,18 +130,18 @@ $(document).ready(function(){
                     else {
                         //CEP pesquisado nÃ£o foi encontrado.
                         limpa_formulario_cep();
-                        alert("CEP nï¿½o encontrado.");
+                        alert("CEP não encontrado.");
                     }
                 });
             } //end if.
             else {
                 //cep Ã© invÃ¡lido.
                 limpa_formulario_cep();
-                alert("Formato de CEP invï¿½ido.");
+                alert("Formato de CEP inváido.");
             }
         } //end if.
         else {
-            //cep sem valor, limpa formulï¿½rio.
+            //cep sem valor, limpa formulá¡rio.
             limpa_formulario_cep();
         }
     })
