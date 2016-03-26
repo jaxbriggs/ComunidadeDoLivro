@@ -50,9 +50,13 @@ $(document).ready(function(){
         if((this.checked && this.value == "pessoa") || !this.checked){ 
            lblCpfOrCnpj.html("CPF");
            cpfOrCnpj.attr("placeholder", "Digite o CPF");
+           cpfOrCnpj.attr("maxlength", "14");
+           mascaraCpf();
         } else {
            lblCpfOrCnpj.html("CNPJ");
            cpfOrCnpj.attr("placeholder", "Digite o CNPJ");
+           cpfOrCnpj.attr("maxlength", "18");
+           mascaraCnpj();
         }   
     });
     
@@ -61,33 +65,111 @@ $(document).ready(function(){
         if(this.checked && this.value == "pessoa"){ 
            lblCpfOrCnpj.html("CPF");
            cpfOrCnpj.attr("placeholder", "Digite o CPF");
+           cpfOrCnpj.attr("maxlength", "14");
+           mascaraCpf();
         } else {
            lblCpfOrCnpj.html("CNPJ");
            cpfOrCnpj.attr("placeholder", "Digite o CNPJ");
+           cpfOrCnpj.attr("maxlength", "18");
+           mascaraCnpj();
         }   
     });
+    //Insere mascara para o CPF
+    function mascaraCpf(){
+       $('#cpfOrCnpj').bind('keypress', function (event){//ao pressionar o teclado no campo cpfOrCnpj, aciona a função
+            var digitos_cpf_cnpj = /^[0-9\.\-\b]$/;// identifica cada numero
+            var caractercapturado = event.keyCode || event.which; //captura ação do mouse ou teclado
+            if (!digitos_cpf_cnpj.test(String.fromCharCode(caractercapturado))
+                                 && caractercapturado != 9 
+                                 && caractercapturado != 37 && caractercapturado != 38
+                                 && caractercapturado != 39 && caractercapturado != 40){ 
+                alert("Digite somente números");
+                return false;
+            }
+            var tamanho = $("#cpfOrCnpj").val().length;//000.000.000-00
+            var cpf_cnpj = $("#cpfOrCnpj").val();
+            if(caractercapturado !=8){    
+                if (tamanho == 3){ 
+                $("#cpfOrCnpj").val(cpf_cnpj+".");
+                }
+                if (tamanho == 7){ 
+                $("#cpfOrCnpj").val(cpf_cnpj+".");
+                }
+                if (tamanho == 11){ 
+                $("#cpfOrCnpj").val(cpf_cnpj+"-");
+                }  
+            }
+        });
+    };
     
+    //Insere mascara para o CNPJ
+    function mascaraCnpj(){
+       $('#cpfOrCnpj').bind('keypress', function (event){//ao pressionar o teclado no campo cpfOrCnpj, aciona a função
+            var digitos_cpf_cnpj = /^[0-9\.\-\/\b]$/;// identifica cada numero
+            var caractercapturado = event.keyCode || event.which; //captura ação do mouse ou teclado
+            if (!digitos_cpf_cnpj.test(String.fromCharCode(caractercapturado))
+                                 && caractercapturado != 9 
+                                 && caractercapturado != 37 && caractercapturado != 38
+                                 && caractercapturado != 39 && caractercapturado != 40){ 
+                alert("Digite somente números");
+                return false;
+            }
+            var tamanho = $("#cpfOrCnpj").val().length;//99.999.999/9999-99
+            var cpf_cnpj = $("#cpfOrCnpj").val();
+            if(caractercapturado !=8){
+                if (tamanho == 2){ 
+                $("#cpfOrCnpj").val(cpf_cnpj+".");
+                }
+                if (tamanho == 6){ 
+                $("#cpfOrCnpj").val(cpf_cnpj+".");
+                }
+                if (tamanho == 10){ 
+                $("#cpfOrCnpj").val(cpf_cnpj+"/");
+                }
+                if (tamanho == 15){ 
+                $("#cpfOrCnpj").val(cpf_cnpj+"-");
+                } 
+            }        
+        });
+    };
     
     /*
     //Altera o form exibido conforme o link de logar/cadastrar e clicado 
     $("#signInOrUp").text("Clique para se cadastrar");
-    $("#signInUpFormTitle").text("Fa�a o login");
+    $("#signInUpFormTitle").text("Faça o login");
     $("#signInOrUp").click(function(){
         if($("#signInForm").css("display") != "none"){
-            $("#signInUpFormTitle").text("Fa�a o cadastro");
+            $("#signInUpFormTitle").text("Faça o cadastro");
             $("#signInOrUp").text("Clique para fazer o login");
             $("#signInForm").css("display","none");
             $("#signUpForm").css("display","inline");
             limparCampos();
         } else {
-            $("#signInUpFormTitle").text("Fa�a o login");
+            $("#signInUpFormTitle").text("Faça o login");
             $("#signInOrUp").text("Clique para se cadastrar");
             $("#signInForm").css("display","inline");
             $("#signUpForm").css("display","none");
             limparCampos();
         }
     })
-    */
+    
+    
+    /*Valida o campo name conforme o banco*/
+    $('#name').bind('keypress', function (event){//ao pressionar o teclado no camo name, aciona a função
+       var validacaracter = /^[a-zA-Z \b]$/;// new RegExp("^[a-zA-Z \b]+$") constroi a expressao regular que identifica letra e espaço
+       var caractercapturado = event.keyCode || event.which; //captura ação do mouse ou teclado
+       //lista de keyCode, 9 do tab e 37 a 40 setas        
+        if (!validacaracter.test(String.fromCharCode(caractercapturado)) && caractercapturado != 9 
+                                 && caractercapturado != 37 && caractercapturado != 38
+                                 && caractercapturado != 39 && caractercapturado != 40){ 
+        //event.preventDefault();
+        alert("O nome deve conter apenas letras.");
+        return false;
+        }
+    });
+
+    
+    
     
     
     /*PREECHIMENTO DO ENDERECO PELO CEP*/
@@ -134,18 +216,18 @@ $(document).ready(function(){
                     else {
                         //CEP pesquisado não foi encontrado.
                         limpa_formulario_cep();
-                        alert("CEP n�o encontrado.");
+                        alert("CEP n�o encontrado.");
                     }
                 });
             } //end if.
             else {
                 //cep é inválido.
                 limpa_formulario_cep();
-                alert("Formato de CEP inv�ido.");
+                alert("Formato de CEP inv�ido.");
             }
         } //end if.
         else {
-            //cep sem valor, limpa formul�rio.
+            //cep sem valor, limpa formul�rio.
             limpa_formulario_cep();
         }
     })
