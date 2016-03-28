@@ -21,7 +21,8 @@ public class LivroDAO {
     public boolean registerLivro(Livro l) throws SQLException, URISyntaxException {
         
         if(!isLivroISBNAlreadyRegistered(l)){
-            String insertLivro = "INSERT INTO comunidade_do_livro.Livro(\n" +
+            String insertLivro = "INSERT INTO comunidade_do_livro.Livro\n" +
+                                 "(\n" +
                                  "	nm_titulo_livro,\n" +
                                  "	nm_autor_livro,\n" +
                                  "	nm_editora_livro,\n" +
@@ -31,7 +32,7 @@ public class LivroDAO {
                                  "	nm_genero_livro,\n" +
                                  "	im_capa_livro,\n" +
                                  "	nm_idioma_livro,\n" +
-                                 "	cd_isbn_livro \n" +
+                                 "	cd_isbn_livro\n" +
                                  ") VALUES (?,?,?,?,?,?,?,?,?,?);";
 
             Connection conn = database.Connection.getConnection();
@@ -43,7 +44,11 @@ public class LivroDAO {
                 pstmt.setString(3, l.getEditora());
                 pstmt.setString(4, l.getDataPublicacao());
                 pstmt.setString(5, l.getDescricao());
-                pstmt.setInt(6, l.getQtdPaginas());
+                if(l.getQtdPaginas() == null){
+                    pstmt.setNull(6, java.sql.Types.INTEGER);
+                } else {
+                    pstmt.setInt(6, l.getQtdPaginas());
+                }
                 pstmt.setString(7, l.getGenero());
                 pstmt.setString(8, l.getCapaLink());
                 pstmt.setString(9, l.getIdioma());
@@ -96,6 +101,69 @@ public class LivroDAO {
             conn.close();
         }
          return false;
+    }
+    
+    public Livro getLivroByISBN(String isbn) throws SQLException{
+        Livro livro;
+        
+        StringBuilder builder = new StringBuilder();
+        builder.append("select cd_livro, ");
+        builder.append("cd_isbn_livro, ");
+        builder.append("nm_titulo_livro, ");
+        builder.append("nm_autor_livro, ");
+        builder.append("nm_editora_livro, ");
+        builder.append("dt_publicacao_livro, ");
+        builder.append("ds_livro, ");
+        builder.append("qt_paginas_livro, ");
+        builder.append("nm_genero_livro, ");
+        builder.append("im_capa_livro, ");
+        builder.append("nm_idioma_livro ");
+        builder.append("from comunidade_do_livro.livro ");
+        builder.append("where cd_isbn_livro = ?");
+        
+        String query = builder.toString();
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            
+            //Prepara o statement para a consulta
+            conn = database.Connection.getConnection();
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, isbn);
+            
+            //Faz o select
+            ResultSet rs = pstmt.executeQuery();
+            
+            livro = new Livro();
+            
+            while (rs.next()) {
+                //Pega o livro retornado
+                livro.setAutor(rs.getString("nm_autor_livro"));
+                livro.setCapaLink(rs.getString("im_capa_livro"));
+                livro.setCodigo(rs.getInt("cd_livro"));
+                livro.setDataPublicacao(rs.getString("dt_publicacao_livro"));
+                livro.setDescricao(rs.getString("ds_livro"));
+                livro.setEditora(rs.getString("nm_editora_livro"));
+                livro.setGenero(rs.getString("nm_genero_livro"));
+                livro.setIdioma(rs.getString("nm_idioma_livro"));
+                livro.setIsbn(rs.getString("cd_isbn_livro"));
+                livro.setQtdPaginas(rs.getInt("qt_paginas_livro"));
+                livro.setTitulo(rs.getString("nm_titulo_livro"));
+            }
+            
+            return livro;
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        } finally {
+            pstmt.close();
+            conn.close();
+        }
+         return null;
     }
 }
 

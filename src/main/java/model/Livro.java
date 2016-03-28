@@ -7,25 +7,25 @@ import java.sql.Timestamp;
  * @author carlos
  */
 public class Livro {
-    private int codigo;
+    private Integer codigo;
     private String isbn;
     private String autor;
     private String titulo;
     private String editora;
     private String dataPublicacao;
     private String descricao;
-    private int qtdPaginas;
+    private Integer qtdPaginas;
     private String genero;
     private String capaLink;
     private String idioma;
 
-    public int getCodigo() {
+    public Integer getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(Integer codigo) {
         this.codigo = codigo;
-    }
+    }    
 
     public String getIsbn() {
         return isbn;
@@ -75,13 +75,13 @@ public class Livro {
         this.descricao = descricao;
     }
 
-    public int getQtdPaginas() {
+    public Integer getQtdPaginas() {
         return qtdPaginas;
     }
 
-    public void setQtdPaginas(int qtdPaginas) {
+    public void setQtdPaginas(Integer qtdPaginas) {
         this.qtdPaginas = qtdPaginas;
-    }
+    }    
 
     public String getGenero() {
         return genero;

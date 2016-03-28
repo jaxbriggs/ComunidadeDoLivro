@@ -1,3 +1,5 @@
+<%@ page import="model.User" %>
+
 <%
     if(request.getParameter("pick") != null && request.getParameter("pick").equals("sair")){
         session.removeAttribute("user");
@@ -19,7 +21,9 @@
         <script src="../jquery/jquery-ui-1.11.4/jquery-ui.min.js"></script>
         <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
         <script src="../custom-resources/js/ajax/requests.js"></script>
+        <script src="../custom-resources/js/ajax/jquery.form.js"></script>
         <script src="../custom-resources/js/novo_livro.js"></script>
+        <script src="../custom-resources/js/meus_livros.js"></script>
     </head>
     
     <body>
@@ -33,11 +37,19 @@
                   <h4 class="modal-title" id="exampleModalLabel">Cadastro de Livro</h4>
                 </div>
                 <div class="modal-body">
-                  <form id="novo_livro_form" enctype="multipart/form-data">
+                    <div class="row" style="margin: 0 auto;">
+                        <div class="col-xs-12">
+                            <div class="alert alert-danger alert-dismissible" role="alert" id="alertCadastroFalha">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <strong>Aviso!</strong> Ocorreu um erro durante o cadastro do livro.
+                            </div>
+                        </div>
+                    </div>
+                    <form id="novo_livro_form" enctype="multipart/form-data" action="/drive" method="post">
                     <div class="row">  
                         <div class="form-group col-xs-6">
-                          <label for="isbn" class="control-label">ISBN:</label>
-                          <input type="text" class="form-control" id="isbn" name="isbn">
+                          <label for="isbn" class="control-label"><span style="color: red">*</span> ISBN:</label>
+                          <input type="text" class="form-control" id="isbn" name="isbn" required="true"  maxlength="13" pattern="(^\d{9}[\d|X]$)|(^\d{12}[\d|X]$)">
                         </div>
                         <div class='form-group col-xs-6'>
                             <label for="publicacao" class="control-label">Data de Publicação:</label>                            
@@ -46,14 +58,14 @@
                     </div>
                     <div class='row'>
                         <div class="form-group col-xs-12">
-                          <label for="titulo" class="control-label">Título:</label>
-                          <input type="text" class="form-control" id="titulo" name="titulo">
+                          <label for="titulo" class="control-label"><span style="color: red">*</span> Título:</label>
+                          <input type="text" class="form-control" id="titulo" name="titulo" required>
                         </div>
                     </div>
                     <div class='row'>
                         <div class="form-group col-xs-6">
-                          <label for="autor" class="control-label">Autor:</label>
-                          <input type="text" class="form-control" id="autor" name="autor">
+                          <label for="autor" class="control-label"><span style="color: red">*</span> Autor:</label>
+                          <input type="text" class="form-control" id="autor" name="autor" required>
                         </div>
                         <div class="form-group col-xs-6">
                           <label for="editora" class="control-label">Editora:</label>
@@ -68,12 +80,12 @@
                     </div>
                     <div class='row'>
                         <div class="form-group col-xs-5">
-                          <label for="genero" class="control-label">Gênero:</label>
-                          <input type="text" class="form-control" id="genero" name="genero">
+                          <label for="genero" class="control-label"><span style="color: red">*</span> Gênero:</label>
+                          <input type="text" class="form-control" id="genero" name="genero" required>
                         </div>
                         <div class="form-group col-xs-5">
-                          <label for="idioma" class="control-label">Idioma:</label>
-                          <input type="text" class="form-control" id="idioma" name="idioma">
+                          <label for="idioma" class="control-label"><span style="color: red">*</span> Idioma:</label>
+                          <input type="text" class="form-control" id="idioma" name="idioma" required>
                         </div>
                         <div class="form-group col-xs-2">
                             <label for="qdtPaginas" class="control-label">Páginas:</label>
@@ -82,16 +94,19 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-xs-3">
-                            <img id="imgCapa" src="" height="211px" width="128px" />                            
-                            </div>
+                            <a class="thumbnail">
+                                <img id="imgCapa" src="" height="211px" width="128px" />
+                            </a>                            
+                        </div>
                         <div class="form-group col-xs-9">
                             <label for="capa" class="control-label">Imagem de Capa:</label>
-                            <input type="file" id="capaPicker"/>
+                            <input type="file" id="capaPicker" name="capaPicker"/>
                             <p class="help-block">Selecione a foto da capa</p>
                         </div>
                     </div>
                     <!--campo hidden para enviar a capa-->
                     <input type="hidden" id="capa" name="capa" value="" />
+                    <input type="hidden" id="userId" name="userId" value="<%= ((User)session.getAttribute("user")) != null ? ((User)session.getAttribute("user")).getId() : null %>" />
                   </form>
                 </div>
                 <div class="modal-footer">
@@ -130,6 +145,17 @@
             </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
+        <div class="row" style="margin: 0 auto;">
+            <div class="col-xs-12">
+                <div class="alert alert-success alert-dismissible" role="alert" id="alertCadastroSucesso">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Aviso!</strong> O livro foi cadastrado com sucesso.
+                </div>
+            </div>
+            <div class="col-xs-12" id="meusLivros">
+                
+            </div>
+        </div>
     </body>
 <%} else {
         response.sendRedirect("/index.jsp");
