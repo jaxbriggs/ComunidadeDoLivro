@@ -216,14 +216,14 @@ $(document).ready(function(){
                     else {
                         //CEP pesquisado não foi encontrado.
                         limpa_formulario_cep();
-                        alert("CEP n�o encontrado.");
+                        alert("CEP não encontrado.");
                     }
                 });
             } //end if.
             else {
                 //cep é inválido.
                 limpa_formulario_cep();
-                alert("Formato de CEP inv�ido.");
+                alert("Formato de CEP inváido.");
             }
         } //end if.
         else {

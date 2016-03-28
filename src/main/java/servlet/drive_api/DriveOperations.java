@@ -24,12 +24,11 @@ import java.util.Arrays;
  * @author carlos
  */
 public class DriveOperations {
-    private static File insertFile(Drive service, String title, String description,
-      String parentId, String mimeType, String filename) {
+    public static File insertFile(Drive service, String title, String parentId, String mimeType, java.io.File fileFromClient, String filename) {
         // File's metadata.
         File body = new File();
         body.setTitle(title);
-        body.setDescription(description);
+        //body.setDescription(description);
         body.setMimeType(mimeType);
 
         // Set the parent folder.
@@ -39,7 +38,7 @@ public class DriveOperations {
         }
 
         // File's content.
-        java.io.File fileContent = new java.io.File(filename);
+        java.io.File fileContent = fileFromClient;
         FileContent mediaContent = new FileContent(mimeType, fileContent);
         try {
           File file = service.files().insert(body, mediaContent).execute();
@@ -54,7 +53,18 @@ public class DriveOperations {
         }
     }
     
-    private static InputStream downloadFile(Drive service, File file) {
+    public static File getFile(Drive service, String fileId) {
+    try {
+      File file = service.files().get(fileId).execute();
+      return file;
+    } catch (IOException e) {
+      System.out.println("An error occured: " + e);
+    }
+    return null;
+  }
+
+    
+    public static InputStream downloadFile(Drive service, File file) {
         if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0) {
           try {
             HttpResponse resp =
@@ -72,7 +82,7 @@ public class DriveOperations {
         }
     }
     
-    private static Drive getService() throws Access.CodeExchangeException, Access.NoRefreshTokenException, IOException{
+    public static Drive getService() throws Access.CodeExchangeException, Access.NoRefreshTokenException, IOException{
         Credential credential = Access.getCredentials(null, null);
         return Authorization.buildService(credential);
     }
