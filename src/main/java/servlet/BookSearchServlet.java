@@ -5,64 +5,63 @@
  */
 package servlet;
 
-import dao.UserDAO;
-import model.User;
+import dao.LivroDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import json.ObjectJson;
-
+import model.Livro;
 
 /**
  *
  * @author carlos
  */
-
 @WebServlet(
-        name = "UserLoginServlet", 
-        urlPatterns = {"/login"}
-    )
-public class UserLoginServlet extends HttpServlet {
-    
-   
-    public void init() throws ServletException
+    name = "BookSearchServlet", 
+    urlPatterns = {"/busca_livro"}
+)
+public class BookSearchServlet extends HttpServlet{
+     public void init() throws ServletException
     {
         // Do nothing
     }
     
     @Override
-    public void doPost(HttpServletRequest request,
+    public void doGet(HttpServletRequest request,
                    HttpServletResponse response)
     throws ServletException, IOException {
         
-        //Um JSON sera retornado
+        String isbn = request.getParameter("isbn");
+        String titulo = request.getParameter("titulo");
+        
         response.setContentType("application/json");
         
-        //Pega os campos digutados
-        String login = request.getParameter("login");
-        String senha = request.getParameter("password");
-        
-        //Faz a consulta do usuario
-        UserDAO dao = new UserDAO();
-        User user = new User();
+        Livro result = new Livro();
+        LivroDAO dao = new LivroDAO();
         try {
-            user = dao.getUserByLoginOrEmail(login, senha);
-        } catch (SQLException ex) {
+            //Faz a consulta por isbn ou titulo
+            if(isbn != null){
+                result = dao.getLivroByISBN(isbn);
+            } else {
+                //Implementar
+            }
+        } catch (Exception ex) {
             ex.printStackTrace();
-        } 
+        }
         
         //Transforma o usuario em um objeto JSON
-        String userJson = ObjectJson.getObjectJson(user);
+        String livroJson = ObjectJson.getObjectJson(result);
         
         PrintWriter out = response.getWriter();
         
-        out.print(userJson);
+        //Retorna o JSON
+        out.print(livroJson);
         out.flush();
+        
     }
     
     @Override

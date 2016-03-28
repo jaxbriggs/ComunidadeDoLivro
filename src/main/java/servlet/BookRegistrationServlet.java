@@ -7,6 +7,7 @@ package servlet;
 
 import dao.LivroDAO;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import javax.servlet.ServletException;
@@ -36,8 +37,10 @@ public class BookRegistrationServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
                    HttpServletResponse response)
     throws ServletException, IOException {
-        ServletOutputStream out = response.getOutputStream();
         
+        response.setContentType("application/json");
+        
+        //Pega os parametros do livro
         String isbn = request.getParameter("isbn");
         String publicacao = request.getParameter("publicacao");
         String titulo = request.getParameter("titulo");
@@ -49,7 +52,9 @@ public class BookRegistrationServlet extends HttpServlet {
         Integer qtdPaginas = null;
         try{
             qtdPaginas = Integer.parseInt(request.getParameter("qtdPaginas"));
-        } catch(Exception ex) {
+        } catch(NumberFormatException ex) {
+            qtdPaginas = null;
+        } catch(Exception ex){
             ex.printStackTrace();
         }
         String capa = request.getParameter("capa");
@@ -68,6 +73,7 @@ public class BookRegistrationServlet extends HttpServlet {
         
         LivroDAO dao = new LivroDAO();
         
+        //Grava o livro no banco
         boolean sucesso = false;
         try {
             sucesso = dao.registerLivro(livro);
@@ -77,8 +83,15 @@ public class BookRegistrationServlet extends HttpServlet {
             ex.printStackTrace();
         }
         
+        
+        
+        //Grava o livro como uma transacao nao iniciada
+        
+        
         //Retorna o JSON
-        String r = "{ success : \""+ String.valueOf(sucesso) +"\"}";
+        PrintWriter out = response.getWriter();
+        
+        String r = "{\"success\":"+ String.valueOf(sucesso) +"}";
         out.print(r);
         out.flush();        
     }

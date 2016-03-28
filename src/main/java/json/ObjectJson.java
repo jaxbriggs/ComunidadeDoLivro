@@ -14,11 +14,11 @@ import model.User;
  *
  * @author carlos
  */
-public class UserJson {
+public class ObjectJson {
     
-    public static String getUserJson(User u){
+    public static <T>String getObjectJson(T u){
         Gson gson = new Gson();
-        Type type = new TypeToken<User>() {}.getType();
+        Type type = new TypeToken<T>() {}.getType();
         String json = gson.toJson(u, type);
         
         return json;
