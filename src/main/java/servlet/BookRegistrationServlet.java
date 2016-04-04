@@ -6,17 +6,20 @@
 package servlet;
 
 import dao.LivroDAO;
+import dao.TransacaoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.Date;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Livro;
+import model.Transacao;
+import model.User;
 
 /**
  *
@@ -49,6 +52,8 @@ public class BookRegistrationServlet extends HttpServlet {
         String descricao = request.getParameter("descricao");
         String genero = request.getParameter("genero");
         String idioma = request.getParameter("idioma");
+        Integer usuarioId = Integer.parseInt(request.getParameter("userId"));
+        
         Integer qtdPaginas = null;
         try{
             qtdPaginas = Integer.parseInt(request.getParameter("qtdPaginas"));
@@ -83,9 +88,41 @@ public class BookRegistrationServlet extends HttpServlet {
             ex.printStackTrace();
         }
         
-        
-        
         //Grava o livro como uma transacao nao iniciada
+        if(sucesso){
+            
+            Livro livroAux = null;
+            try {
+                livroAux = dao.getLivroByISBN(isbn);
+            } catch (SQLException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            }
+            
+            Transacao t = new Transacao();
+            User doador = new User();
+            doador.setId(usuarioId);
+            t.setDoador(doador);
+            t.setDonatario(null);
+            t.setCadastrante(doador);
+            t.setDescricao(null);
+            t.setIsAtivada(false);
+            t.setIsAutorizada(false);
+            t.setIsFinalizada(false);
+            t.setQtLivroTransacao(0);
+            t.setLivro(livroAux);
+            t.setDataCadastro(new Date());
+            t.setDataFinalizacao(null);
+            
+            TransacaoDAO tDao = new TransacaoDAO();
+            try {
+                tDao.registerTransacao(t);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            } catch (URISyntaxException ex) {
+                ex.printStackTrace();
+            }
+        }
         
         
         //Retorna o JSON

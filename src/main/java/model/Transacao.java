@@ -5,20 +5,30 @@
  */
 package model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  *
  * @author carlos
  */
 public class Transacao {
     private Integer cdTransacao;
-    private User cdDoador;
-    private User cdDonatario;
+    private User doador;
+    private User donatario;
+    private User cadastrante;
     private Boolean isFinalizada;
     private Boolean isAutorizada;
     private Boolean isAtivada;
-    private Boolean qtLivroTransacao;
+    private Integer qtLivroTransacao;
     private Livro livro;
-
+    private String descricao;
+    private String dataCadastro;
+    private String dataFinalizacao;
+    
+    private SimpleDateFormat ft = 
+            new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+    
     public Transacao() {
     }
 
@@ -30,20 +40,28 @@ public class Transacao {
         this.cdTransacao = cdTransacao;
     }
 
-    public User getCdDoador() {
-        return cdDoador;
+    public User getDoador() {
+        return doador;
     }
 
-    public void setCdDoador(User cdDoador) {
-        this.cdDoador = cdDoador;
+    public void setDoador(User doador) {
+        this.doador = doador;
     }
 
-    public User getCdDonatario() {
-        return cdDonatario;
+    public User getDonatario() {
+        return donatario;
     }
 
-    public void setCdDonatario(User cdDonatario) {
-        this.cdDonatario = cdDonatario;
+    public void setDonatario(User donatario) {
+        this.donatario = donatario;
+    }
+
+    public User getCadastrante() {
+        return cadastrante;
+    }
+
+    public void setCadastrante(User cadastrante) {
+        this.cadastrante = cadastrante;
     }
 
     public Boolean getIsFinalizada() {
@@ -70,13 +88,13 @@ public class Transacao {
         this.isAtivada = isAtivada;
     }
 
-    public Boolean getQtLivroTransacao() {
+    public Integer getQtLivroTransacao() {
         return qtLivroTransacao;
     }
 
-    public void setQtLivroTransacao(Boolean qtLivroTransacao) {
+    public void setQtLivroTransacao(Integer qtLivroTransacao) {
         this.qtLivroTransacao = qtLivroTransacao;
-    }
+    }    
 
     public Livro getLivro() {
         return livro;
@@ -86,5 +104,31 @@ public class Transacao {
         this.livro = livro;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(Date dataCadastro) {
+        this.dataCadastro = 
+                dataCadastro != null ? "'" + ft.format(dataCadastro) + "'" : null;
+    }
+
+    public String getDataFinalizacao() {
+        return dataFinalizacao;
+    }
+
+    public void setDataFinalizacao(Date dataFinalizacao) {
+        this.dataFinalizacao = 
+                dataFinalizacao != null ? "'" + ft.format(dataFinalizacao) + "'" : null;
+    }
+    
     
 }

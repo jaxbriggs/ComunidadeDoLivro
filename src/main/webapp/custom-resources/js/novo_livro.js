@@ -10,12 +10,19 @@ var genero;
 var idioma;
 var paginas;
 var capa;
+var isbn;
 
-//Disabilita e habilita TODOS os campos do form
+/*==========================================================================*/
+/*              Disabilita e habilita TODOS os campos do form               */
+/*==========================================================================*/
 function disableLivroFormFields(habDisab, exceptFields){
     
     if($.inArray(publicacao, exceptFields) === -1){
         publicacao.prop('disabled', habDisab);
+    }
+    
+    if($.inArray(isbn, exceptFields) === -1){
+        isbn.prop('disabled', habDisab);
     }
     
     if($.inArray(titulo, exceptFields) === -1){
@@ -52,6 +59,7 @@ function disableLivroFormFields(habDisab, exceptFields){
     
 }
 
+//Exibe a imagem selecionada no elemento src
 function readURL(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
@@ -79,6 +87,7 @@ $(document).ready(function() {
     paginas = $('#qtdPaginas');
     capa = $("#capa");
     $('#imgCapa').attr('src', semCapa);
+    isbn = $('#isbn');
     
     //Configura o click do botao cadastrar livro para submeter o form de cadastro
     $('#cadastrarNovoLivro').click(function(){
@@ -90,14 +99,21 @@ $(document).ready(function() {
         $('#modal_novo_livro').modal('toggle') 
      });     
     
-     var patt = /(^\d{9}[\d|X]$)|(^\d{12}[\d|X]$)/g;
-     //Faz a consulta na API do google     
+    //Faz a consulta na API do google por ISBN
+    var patt = /(^\d{9}[\d|X]$)|(^\d{12}[\d|X]$)/g;
     $('#isbn').on('input',function(){
         if($("#isbn").val().length >= 4 && patt.test($("#isbn").val())){
             getLivrosByISBN($("#isbn").val());
         } else {
-            limpaCampos();
+            limpaCampos([isbn]);
         }
+    });
+    
+    //Faz a consulta do livro baseado no titulo
+    $('#titulo').on('input',function(){
+        if($("#titulo").val().length % 5 === 0){
+            getLivrosByTitulo($("#titulo").val());
+        } 
     });
     
     //Altera a imagem da capa exibida ao escolher atraves do input
@@ -110,6 +126,7 @@ $(document).ready(function() {
         $(this).find('form')[0].reset();
         $('#imgCapa').attr('src', semCapa);
         disableLivroFormFields(false, []);
+        $("#alertCadastroFalha").hide();
     });
     
     //Manda a requisicao para o servlet que cadastra o livro
@@ -118,7 +135,7 @@ $(document).ready(function() {
         
         disableLivroFormFields(false, []);
         
-        alert($("#userId").val());
+        //alert($("#userId").val());
         
         //Servico que grava a imagem no Drive
         if($('#capaPicker').val() !== ""){
@@ -141,19 +158,25 @@ $(document).ready(function() {
                             if(data !== null && !$.isEmptyObject(data) && data.success === true){
                                 //Sucesso ao cadastrar livro
                                 //disableLivroFormFields(true, []);
+                                $('#modal_novo_livro').modal('toggle');
                                 $("#alertCadastroSucesso").alert();
                                 $("#alertCadastroSucesso").fadeTo(2000, 500).slideUp(500, function(){
                                     $("#alertCadastroSucesso").hide();
                                 });
-                                $('#modal_novo_livro').modal('toggle');
                             } else {
                                 //Erro ao cadastrar livro
                                 $("#alertCadastroFalha").show();
+                                $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
+                                    $("#alertCadastroFalha").hide();
+                                });
                             }
                         });
                     } else {
                         //Exibir erro ao gravar a imagem
                         $("#alertCadastroFalha").show();
+                        $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#alertCadastroFalha").hide();
+                        });
                     }
                 }
             });        
@@ -171,6 +194,9 @@ $(document).ready(function() {
                     $('#modal_novo_livro').modal('toggle');
                 } else {
                     $("#alertCadastroFalha").show();
+                    $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alertCadastroFalha").hide();
+                    });
                 }
             });
         }
@@ -189,29 +215,38 @@ $(document).ready(function() {
     });
 });
 
-function limpaCampos(){
+function limpaCampos(exceptFields){
     publicacao.val('');
-    titulo.val('');
+    if($.inArray(titulo, exceptFields) === -1){
+        titulo.val('');
+    }
     autor.val('');
     editora.val('');
     descricao.val('');
     genero.val('');
     idioma.val('');
     paginas.val('');
+    if($.inArray(isbn, exceptFields) === -1){
+        isbn.val('');
+    }
 
     disableLivroFormFields(false, []);
     
     $('#imgCapa').attr('src', semCapa);
     $('#capaPicker').val("");
-    $('#capa').val("")
+    $('#capa').val("");
 }
 
-//Funcao que pega os dados retonados da api
-function setLivroDataByISBN(data){
+/*==========================================================================*/
+/*         Funcao que pega os dados retonados da API [ISBN]                 */
+/*==========================================================================*/
+function setLivroData(data){
     
     var missingManadatoryFields = [];
     
-    limpaCampos();
+    missingManadatoryFields.push(isbn);
+    
+    limpaCampos([isbn]);
        
     //Data de publicacao
     if(jQuery.type(data.items[0].volumeInfo.publishedDate) === "undefined"){
@@ -234,7 +269,7 @@ function setLivroDataByISBN(data){
         missingManadatoryFields.push(autor);
         autor.val("");
     } else {
-        autor.val(data.items[0].volumeInfo.authors[0]);
+        autor.val(data.items[0].volumeInfo.authors.join(", "));
     }
 
     //Editora
@@ -258,7 +293,7 @@ function setLivroDataByISBN(data){
         missingManadatoryFields.push(genero);
         genero.val("");
     } else {
-        genero.val(data.items[0].volumeInfo.categories[0]);
+        genero.val(data.items[0].volumeInfo.categories.join(", "));
     }
 
     //Idioma
@@ -290,27 +325,68 @@ function setLivroDataByISBN(data){
     disableLivroFormFields(true, missingManadatoryFields);
 }
 
-//Funcao que pega os dados retonados do servidor
-function setLivroDataByISBNFromServer(data){
+/*==========================================================================*/
+//    Funcao que pega os dados de livro retonados do servidor [ISBN]
+/*==========================================================================*/
+function setLivroDataFromServer(data, callerElement){
     
-    limpaCampos();
+    var exception = [];
+    exception.push(callerElement);
+    
+    limpaCampos(exception);
+    
+    if(callerElement === titulo && $.type(data.dataPublicacao) === "undefined"){
+        exception.push(publicacao);
+    }
     
     publicacao.val(data.dataPublicacao);
     
     titulo.val(data.titulo);
-   
+    
+    if(callerElement !== isbn){
+        isbn.val(data.isbn);
+    }
+    
+    if(callerElement === titulo && $.type(data.autor) === "undefined"){
+        exception.push(autor);
+    }
+    
     autor.val(data.autor);
 
+    if(callerElement === titulo && $.type(data.editora) === "undefined"){
+        exception.push(editora);
+    }
+    
     editora.val(data.editora);
-
+    
+    if(callerElement === titulo && $.type(data.descricao) === "undefined"){
+        exception.push(descricao);
+    }
+    
     descricao.val(data.descricao);
-
+    
+    if(callerElement === titulo && $.type(data.genero) === "undefined"){
+        exception.push(genero);
+    }
+    
     genero.val(data.genero);
-
+    
+    if(callerElement === titulo && $.type(data.idioma) === "undefined"){
+        exception.push(idioma);
+    }
+    
     idioma.val(data.idioma);
-
+    
+    if(callerElement === titulo && $.type(data.qtdPaginas) === "undefined"){
+        exception.push(paginas);
+    }
+    
     paginas.val(data.qtdPaginas);
-
+    
+    if(callerElement === titulo && $.type(data.capaLink) === "undefined"){
+        exception.push(capa);
+    }
+    
     capa.val(data.capaLink);
     
     if(data.capaLink !== ""){ 
@@ -319,10 +395,12 @@ function setLivroDataByISBNFromServer(data){
         $('#imgCapa').attr('src', semCapa)
     }
     
-    disableLivroFormFields(true, []);
+    disableLivroFormFields(true, exception);
 }
 
-//Faz requisicao do livro por isbn
+/*==========================================================================*/
+//                  Faz requisicao do livro por [ISBN]
+/*==========================================================================*/
 function getLivrosByISBN(texto){
     
     /*var str = "The best things in life are free";
@@ -333,19 +411,61 @@ function getLivrosByISBN(texto){
     
     gettingFromServer.done(function( data ) {
         if(!$.isEmptyObject(data)){
-            setLivroDataByISBNFromServer(data);
+            setLivroDataFromServer(data, isbn);
         } else {
             var getting = $.get('/api_livros', {isbn : texto});
             getting.done(function( data ) {
                 if(!$.isEmptyObject(data)){
-                    setLivroDataByISBN(data);
+                    setLivroData(data);
                 } else {
                     disableLivroFormFields(false, []);
-                    limpaCampos();
+                    limpaCampos([isbn]);
                 }
             });
         }
     });
 
     
+};
+
+
+//TITULO
+
+/*==========================================================================*/
+//                   Faz requisicao do livro [TITULO]
+/*==========================================================================*/
+var resetar = false;
+function getLivrosByTitulo(texto){    
+    
+    var gettingFromServer = $.get('/busca_livro', {titulo : texto});
+    
+    gettingFromServer.done(function( data ) {
+        if(!$.isEmptyObject(data)){
+            var lista = data;
+            
+            $.each(data, function(index, value){
+                //lista.push(data[index].titulo + " (" + data[index].isbn + ")");
+                lista.push({label:data[index].titulo + " - " + data[index].autor, value:data[index]});
+            });
+            
+            $( "#titulo" ).autocomplete({
+                minLength: 1,
+                source: lista,
+                appendTo: "#tituloWrapper",
+                select: function( event, ui ) {
+                    event.preventDefault();
+                    setLivroDataFromServer(ui.item.value, titulo);
+                    resetar = true;
+                }
+            }).on("change", function () {
+                $(this).autocomplete("search", "");
+            }).on("input", function(){
+                if(resetar){
+                    limpaCampos([titulo]);
+                    resetar = false;
+                }
+            });            
+            
+        } 
+    });
 };

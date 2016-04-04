@@ -107,7 +107,28 @@ public class Livro {
         this.idioma = idioma;
     }
     
-    
+    @Override
+    public boolean equals(Object livro){
+        if(livro instanceof Livro){
+            /*
+            return ((Livro)livro).getAutor().equals(this.autor) &&
+                   ((Livro)livro).getCapaLink().equals(this.capaLink) &&
+                   ((Livro)livro).getDataPublicacao().equals(this.dataPublicacao) &&
+                   ((Livro)livro).getDescricao().equals(this.descricao) &&
+                   ((Livro)livro).getEditora().equals(this.editora) &&
+                   ((Livro)livro).getGenero().equals(this.genero) &&
+                   ((Livro)livro).getIdioma().equals(this.idioma) &&
+                   ((Livro)livro).getIsbn().equals(this.isbn) &&
+                   ((Livro)livro).getQtdPaginas().equals(this.qtdPaginas);
+            */
+            try{
+                return this.isbn.equals(((Livro) livro).getIsbn());
+            } catch(NullPointerException ex){
+                return false;
+            }
+        }
+        return false;
+    }
 }
 
 

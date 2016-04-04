@@ -1,11 +1,20 @@
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
 <%@ page import="model.User" %>
+<%@ page import="model.Livro" %>
+<%@ page import="model.Transacao" %>
+<%@ page import="dao.TransacaoDAO" %>
 
 <%
+    List<Transacao> transacoes = new ArrayList<Transacao>();
+    
     if(request.getParameter("pick") != null && request.getParameter("pick").equals("sair")){
         session.removeAttribute("user");
     }
     
     if(session.getAttribute("user") != null){
+            TransacaoDAO TransacaoDAO = new TransacaoDAO();        
+            transacoes.addAll(TransacaoDAO.getLivrosByUsuario(((User)session.getAttribute("user")).getId()));
 %>
 
 <!DOCTYPE html>
@@ -17,17 +26,16 @@
         <link rel="stylesheet" type="text/css" href="custom-resources/font-awesome-4.5.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="../jquery/jquery-ui-1.11.4/themes/smoothness/jquery-ui.min.css">
         <link rel="stylesheet" type="text/css" href="../custom-resources/css/general.css">
+        <link rel="stylesheet" type="text/css" href="../custom-resources/css/toggle.css">
         <script src="jquery/jquery-1.12.1.min.js"></script>
         <script src="../jquery/jquery-ui-1.11.4/jquery-ui.min.js"></script>
         <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
         <script src="../custom-resources/js/ajax/requests.js"></script>
-        <script src="../custom-resources/js/ajax/jquery.form.js"></script>
         <script src="../custom-resources/js/novo_livro.js"></script>
         <script src="../custom-resources/js/meus_livros.js"></script>
     </head>
     
     <body>
-        
         <!--MODAL NOVO LIVRO-->
         <div class="modal fade" id="modal_novo_livro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog" role="document">
@@ -39,8 +47,7 @@
                 <div class="modal-body">
                     <div class="row" style="margin: 0 auto;">
                         <div class="col-xs-12">
-                            <div class="alert alert-danger alert-dismissible" role="alert" id="alertCadastroFalha">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="alert alert-danger" role="alert" id="alertCadastroFalha">
                                 <strong>Aviso!</strong> Ocorreu um erro durante o cadastro do livro.
                             </div>
                         </div>
@@ -59,7 +66,7 @@
                     <div class='row'>
                         <div class="form-group col-xs-12">
                           <label for="titulo" class="control-label"><span style="color: red">*</span> Título:</label>
-                          <input type="text" class="form-control" id="titulo" name="titulo" required>
+                          <span id="tituloWrapper"><input type="text" class="form-control" id="titulo" name="titulo" required></span>
                         </div>
                     </div>
                     <div class='row'>
@@ -106,6 +113,7 @@
                     </div>
                     <!--campo hidden para enviar a capa-->
                     <input type="hidden" id="capa" name="capa" value="" />
+                    <!--campo hidden para enviar o id do usuario-->
                     <input type="hidden" id="userId" name="userId" value="<%= ((User)session.getAttribute("user")) != null ? ((User)session.getAttribute("user")).getId() : null %>" />
                   </form>
                 </div>
@@ -145,15 +153,59 @@
             </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
-        <div class="row" style="margin: 0 auto;">
-            <div class="col-xs-12">
-                <div class="alert alert-success alert-dismissible" role="alert" id="alertCadastroSucesso">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <strong>Aviso!</strong> O livro foi cadastrado com sucesso.
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="alert alert-success" role="alert" id="alertCadastroSucesso">
+                        <strong>Aviso!</strong> O livro foi cadastrado com sucesso.
+                    </div>
                 </div>
             </div>
-            <div class="col-xs-12" id="meusLivros">
-                
+            <div class="row">
+                <div class="col-xs-offset-1 col-xs-10">
+                    <%
+                        Livro l = null;
+                        for(Transacao trs : transacoes){
+                             l = trs.getLivro();
+                    %>    
+                        <div class="row" style="padding-top:10px;">
+                                <div class="col-xs-2 visible-lg" style="text-align: right;">
+                                     <a class="img-thumbnail">
+                                        <img id="imgCapa" src="<%= l.getCapaLink() %>" height="211px" width="128px" />
+                                     </a> 
+                                </div>
+                                <div class="col-xs-10" style="align-items: center;">
+                                    <div style="">
+                                        <h4><b><%= l.getTitulo() + " (" + l.getIsbn() + ")" %></b></h4>
+                                        <p>
+                                            <% if(!l.getAutor().equals("")){%> <b>Por:</b> <%= l.getAutor() %> <%}%>
+                                            <% if(!(l.getQtdPaginas() == null)){%> | <b>Nº de Páginas:</b> <%= l.getQtdPaginas() %> <%}%>
+                                            <% if(!l.getIdioma().equals("")){%> | <b>Idioma:</b> <%= l.getIdioma() %> <%}%>
+                                        </p>
+                                    </div>
+                                    <div style="text-align: justify; padding-top: 2%;">
+                                        <%= l.getDescricao().length() > 495 ? l.getDescricao().substring(0,494) + "..." : l.getDescricao() %>
+                                        <!--There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc-->
+                                    </div>
+                                    <div>
+                                        <p style="float: bottom; padding-top: 2%;">
+                                        <span class="label label-default">Default</span>
+                                        <span class="label label-primary">Primary</span>
+                                        <span class="label label-success">Success</span>
+                                        <span class="label label-info">Info</span>
+                                        <span class="label label-warning">Warning</span>
+                                        <span class="label label-danger">Danger</span>
+                                        <span style="float:right; margin-top:-3%;">
+                                            <input type="checkbox" name="<%= l.getCodigo() %>" id="<%= l.getCodigo()%>" class="toggle">
+                                            <label for="<%= l.getCodigo() %>"></label>
+                                        </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            <hr>
+                        </div>
+                    <%}%>
+                </div>
             </div>
         </div>
     </body>

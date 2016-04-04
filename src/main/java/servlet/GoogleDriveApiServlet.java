@@ -1,5 +1,6 @@
 package servlet;
 
+import apis.drive.Access;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,8 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import servlet.drive_api.Access;
-import servlet.drive_api.DriveOperations;
+import apis.drive.DriveOperations;
 
 @WebServlet(
     name = "GoogleDriveApiServlet", 
