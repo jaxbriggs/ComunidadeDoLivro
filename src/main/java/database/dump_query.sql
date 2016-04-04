@@ -1,4 +1,4 @@
-﻿CREATE TABLE comunidade_do_livro.LIVRO(
+CREATE TABLE comunidade_do_livro.LIVRO(
       cd_livro 	SERIAL,
       cd_isbn_livro   		VARCHAR,
       nm_titulo_livro 		VARCHAR,
