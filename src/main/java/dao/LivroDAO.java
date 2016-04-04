@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import model.Livro;
 
 /**
@@ -153,6 +155,136 @@ public class LivroDAO {
             }
             
             return livro;
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        } finally {
+            pstmt.close();
+            conn.close();
+        }
+         return null;
+    }
+    
+    public Livro getLivroByCodigo(Integer codigo) throws SQLException{
+        Livro livro;
+        
+        StringBuilder builder = new StringBuilder();
+        builder.append("select cd_livro, ");
+        builder.append("cd_isbn_livro, ");
+        builder.append("nm_titulo_livro, ");
+        builder.append("nm_autor_livro, ");
+        builder.append("nm_editora_livro, ");
+        builder.append("dt_publicacao_livro, ");
+        builder.append("ds_livro, ");
+        builder.append("qt_paginas_livro, ");
+        builder.append("nm_genero_livro, ");
+        builder.append("im_capa_livro, ");
+        builder.append("nm_idioma_livro ");
+        builder.append("from comunidade_do_livro.livro ");
+        builder.append("where cd_livro = ?");
+        
+        String query = builder.toString();
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            
+            //Prepara o statement para a consulta
+            conn = database.Connection.getConnection();
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, codigo);
+            
+            //Faz o select
+            ResultSet rs = pstmt.executeQuery();
+            
+            livro = new Livro();
+            
+            while (rs.next()) {
+                //Pega o livro retornado
+                livro.setAutor(rs.getString("nm_autor_livro"));
+                livro.setCapaLink(rs.getString("im_capa_livro"));
+                livro.setCodigo(rs.getInt("cd_livro"));
+                livro.setDataPublicacao(rs.getString("dt_publicacao_livro"));
+                livro.setDescricao(rs.getString("ds_livro"));
+                livro.setEditora(rs.getString("nm_editora_livro"));
+                livro.setGenero(rs.getString("nm_genero_livro"));
+                livro.setIdioma(rs.getString("nm_idioma_livro"));
+                livro.setIsbn(rs.getString("cd_isbn_livro"));
+                livro.setQtdPaginas(rs.getInt("qt_paginas_livro"));
+                livro.setTitulo(rs.getString("nm_titulo_livro"));
+            }
+            
+            return livro;
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        } finally {
+            pstmt.close();
+            conn.close();
+        }
+         return null;
+    }
+    
+    public List<Livro> getLivrosByTitulo(String titulo) throws SQLException{
+        List<Livro> livros;
+        
+        StringBuilder builder = new StringBuilder();
+        builder.append("select cd_livro, ");
+        builder.append("cd_isbn_livro, ");
+        builder.append("nm_titulo_livro, ");
+        builder.append("nm_autor_livro, ");
+        builder.append("nm_editora_livro, ");
+        builder.append("dt_publicacao_livro, ");
+        builder.append("ds_livro, ");
+        builder.append("qt_paginas_livro, ");
+        builder.append("nm_genero_livro, ");
+        builder.append("im_capa_livro, ");
+        builder.append("nm_idioma_livro ");
+        builder.append("from comunidade_do_livro.livro ");
+        builder.append("where lower(nm_titulo_livro) like lower(?)");
+        
+        String query = builder.toString();
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            
+            //Prepara o statement para a consulta
+            conn = database.Connection.getConnection();
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, "%" + titulo + "%");
+            
+            //Faz o select
+            ResultSet rs = pstmt.executeQuery();
+            
+            livros = new ArrayList<Livro>();
+            Livro livro = null;
+            
+            while (rs.next()) {
+                livro = new Livro();
+                //Pega o livro retornado
+                livro.setAutor(rs.getString("nm_autor_livro"));
+                livro.setCapaLink(rs.getString("im_capa_livro"));
+                livro.setCodigo(rs.getInt("cd_livro"));
+                livro.setDataPublicacao(rs.getString("dt_publicacao_livro"));
+                livro.setDescricao(rs.getString("ds_livro"));
+                livro.setEditora(rs.getString("nm_editora_livro"));
+                livro.setGenero(rs.getString("nm_genero_livro"));
+                livro.setIdioma(rs.getString("nm_idioma_livro"));
+                livro.setIsbn(rs.getString("cd_isbn_livro"));
+                livro.setQtdPaginas(rs.getInt("qt_paginas_livro"));
+                livro.setTitulo(rs.getString("nm_titulo_livro"));
+                
+                livros.add(livro);
+            }
+            
+            return livros;
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
         } catch (SQLException ex) {

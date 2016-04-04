@@ -49,11 +49,11 @@
         <title>Comunidade do Livro</title>
     </head>
     
-    <body>
+    <body id="index_body">
         <%@include file="page_components/sidebar.jsp"%>
         <!-- Page Content -->
-        <div class="container" id="page-content-wrapper-container" style = "background-color: white; padding: 0; margin: 0;">
-            <div class = "row" id="page-content-wrapper" style="padding: 0; margin: 0;">
+        <div class="container" id="page-content-wrapper-container" style = "background-color: white; padding: 0;">
+            <div id="page-content-wrapper" style="padding: 0;">
                 
             </div>
         </div>

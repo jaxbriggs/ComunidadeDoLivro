@@ -8,6 +8,7 @@ package json;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.List;
 import model.User;
 
 /**
@@ -22,7 +23,13 @@ public class ObjectJson {
         String json = gson.toJson(u, type);
         
         return json;
-        //List<Task> fromJson = gson.fromJson(json, type);
     }
     
+    public static <T>String getObjectsJson(List<T> u){
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<T>>() {}.getType();
+        String json = gson.toJson(u, type);
+        
+        return json;
+    }
 }

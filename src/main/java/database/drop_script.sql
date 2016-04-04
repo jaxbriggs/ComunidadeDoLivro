@@ -1,4 +1,4 @@
-﻿DROP TABLE comunidade_do_livro.COMENTARIO;
+DROP TABLE comunidade_do_livro.COMENTARIO;
 DROP TABLE comunidade_do_livro.TRANSACAO;
 DROP TABLE comunidade_do_livro.USUARIO;
 DROP TABLE comunidade_do_livro.ENDERECO;

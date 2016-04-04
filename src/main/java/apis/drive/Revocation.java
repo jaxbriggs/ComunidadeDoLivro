@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.drivequickstart.drivequickstart;
+package apis.drive;
 
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.services.mirror.Mirror;

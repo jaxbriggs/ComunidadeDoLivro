@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servlet.drive_api;
+package apis.drive;
 
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;

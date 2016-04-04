@@ -45,20 +45,24 @@ CREATE TABLE comunidade_do_livro.USUARIO(
       cd_cnpj_usuario		VARCHAR(20),	
       cd_telefone_usuario	VARCHAR(20),	
       cd_celular_usuario	VARCHAR(20),
+      dt_cadastro_usuario       TIMESTAMP,
       CONSTRAINT pk_cd_usuario PRIMARY KEY(cd_usuario),
       FOREIGN KEY (cd_endereco_usuario) REFERENCES comunidade_do_livro.ENDERECO (cd_endereco)  
 );
 
 CREATE TABLE comunidade_do_livro.TRANSACAO(
       cd_transacao			SERIAL,
-      cd_doador_usuario_transacao	INTEGER ,
+      cd_doador_usuario_transacao	INTEGER,
       cd_donatario_usuario_transacao	INTEGER,
+      cd_usuario_cadastrante            INTEGER,
       cd_livro_transacao		INTEGER NOT NULL,
       ic_transacao_finalizada_sim_nao	BOOLEAN,
       ic_transacao_autorizada_sim_nao	BOOLEAN,
       ic_transacao_ativa_sim_nao	BOOLEAN,
       qt_livro_transacao      		INTEGER,
       ds_observacao_livro_transacao	VARCHAR(200),
+      dt_cadastro_transacao             TIMESTAMP,
+      dt_transacao_finalizada           TIMESTAMP,      
       CONSTRAINT pk_cd_transacao PRIMARY KEY(cd_transacao),
       FOREIGN KEY (cd_doador_usuario_transacao) REFERENCES comunidade_do_livro.USUARIO (cd_usuario),
       FOREIGN KEY (cd_donatario_usuario_transacao) REFERENCES comunidade_do_livro.USUARIO (cd_usuario),
@@ -67,11 +71,11 @@ CREATE TABLE comunidade_do_livro.TRANSACAO(
 );
 
 CREATE TABLE comunidade_do_livro.COMENTARIO(
-      cd_comentario		  SERIAL,
-      cd_transacao_comentario	  INTEGER NOT NULL,
-      dt_inclusao_transacao	  TIMESTAMP,
-      cd_usuario_comentario	  INTEGER, 
-      dt_ultima_edicao_comentario TIMESTAMP,
+      cd_comentario                       SERIAL,
+      cd_transacao_comentario             INTEGER NOT NULL,
+      dt_inclusao_comentario_transacao	  TIMESTAMP,
+      cd_usuario_comentario               INTEGER, 
+      dt_ultima_edicao_comentario         TIMESTAMP,
       FOREIGN KEY (cd_transacao_comentario) REFERENCES comunidade_do_livro.TRANSACAO (cd_transacao)	
 );
 
