@@ -195,10 +195,15 @@
                                         <span class="label label-info">Info</span>
                                         <span class="label label-warning">Warning</span>
                                         <span class="label label-danger">Danger</span>
-                                        <span style="float:right; margin-top:-3%;">
-                                            <input type="checkbox" name="<%= l.getCodigo() %>" id="<%= l.getCodigo()%>" class="toggle">
-                                            <label for="<%= l.getCodigo() %>"></label>
-                                        </span>
+                                        <div style="float:right; margin-top:-3%;" class="row">
+                                            <div class="col-xs-6">
+                                                <a href="#" title='Remover' data-toggle="remover" class="remocaoLivro" id="rem<%= trs.getCdTransacao() %>"><img height="32px" width="32px" src="../custom-resources/img/delete_img.png"/></a>
+                                            </div>
+                                            <div class="col-xs-6" style="margin-top: -22px;">
+                                                <input type="checkbox" name="<%= trs.getCdTransacao() %>" id="<%= trs.getCdTransacao() %>" class="toggle">
+                                                <label for="<%= trs.getCdTransacao() %>"></label>
+                                            </div>
+                                        </div>
                                         </p>
                                     </div>
                                 </div>

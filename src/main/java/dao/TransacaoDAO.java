@@ -130,4 +130,54 @@ public class TransacaoDAO {
             conn.close();
         }
     }
+    
+    public int alterarDoacaoLivroTransacao(int transacaoId, boolean doarSimNao, int qtdDoada) throws SQLException, URISyntaxException{
+        StringBuilder updateTransacao = new StringBuilder(); 
+        updateTransacao.append("UPDATE comunidade_do_livro.transacao "); 
+        updateTransacao.append("SET ic_transacao_ativa_sim_nao = ");
+        updateTransacao.append(doarSimNao);
+        updateTransacao.append(", qt_livro_transacao = ");
+        updateTransacao.append(qtdDoada);
+        updateTransacao.append(" WHERE cd_transacao = ");
+        updateTransacao.append(transacaoId);
+        updateTransacao.append(";");
+        
+        Connection conn = database.Connection.getConnection();
+        int rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeUpdate(updateTransacao.toString());
+            return rs;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return 0;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    public int removerDoacaoLivroTransacao(int transacaoId) throws URISyntaxException, SQLException {
+        StringBuilder deleteTransacao = new StringBuilder(); 
+        deleteTransacao.append("DELETE FROM comunidade_do_livro.transacao ");
+        deleteTransacao.append("where cd_transacao = ");
+        deleteTransacao.append(transacaoId);
+        deleteTransacao.append(";");
+        
+        Connection conn = database.Connection.getConnection();
+        int rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeUpdate(deleteTransacao.toString());
+            return rs;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return 0;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
 } 
