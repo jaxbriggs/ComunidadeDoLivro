@@ -20,7 +20,7 @@ import model.Transacao;
  */
 public class TransacaoDAO {
     
-    public List<Transacao> getLivrosByUsuario(Integer cdUsuario) throws URISyntaxException, SQLException {
+    public List<Transacao> getLivrosByUsuario(Integer cdUsuario, Integer limit) throws URISyntaxException, SQLException {
         
         List<Transacao> transacoes = new ArrayList<Transacao>();
         
@@ -36,7 +36,7 @@ public class TransacaoDAO {
                         " from comunidade_do_livro.transacao t1" +
                         " where t1.cd_doador_usuario_transacao = " + cdUsuario + " and" +
                         " t1.cd_usuario_cadastrante = " + cdUsuario +  
-                        " order by t1.dt_cadastro_transacao desc;";
+                        " order by t1.dt_cadastro_transacao desc" + (limit != null ? (" limit " + limit) : ";");
         
         Connection conn = database.Connection.getConnection();
         ResultSet rs;
@@ -67,6 +67,38 @@ public class TransacaoDAO {
             }
             
             return transacoes;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    public Integer getAmountOfBooksByUser(Integer userId) throws SQLException, URISyntaxException {
+        StringBuilder builder = new StringBuilder();
+        builder.append("select count(*) from comunidade_do_livro.transacao");
+        builder.append(" where cd_doador_usuario_transacao = ");
+        builder.append(userId);
+        builder.append(" and");                
+        builder.append(" cd_usuario_cadastrante = ");
+        builder.append(userId);
+        builder.append(";");
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        Integer amount = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(builder.toString());
+
+            while(rs.next()){
+                amount = rs.getInt(1);
+            }
+            
+            return amount;
         }  catch (SQLException ex) {
             ex.printStackTrace();
             return null;

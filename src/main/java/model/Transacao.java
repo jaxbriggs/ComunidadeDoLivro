@@ -5,6 +5,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import java.util.Date;
  *
  * @author carlos
  */
-public class Transacao {
+public class Transacao implements Serializable {
     private Integer cdTransacao;
     private User doador;
     private User donatario;
@@ -26,7 +27,7 @@ public class Transacao {
     private String dataCadastro;
     private String dataFinalizacao;
     
-    private SimpleDateFormat ft = 
+    private transient SimpleDateFormat ft = 
             new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
     
     public Transacao() {
