@@ -1,6 +1,4 @@
 $(document).ready(function(){
-
-
     
     //LABEL
     var lblCpfOrCnpj = $("#lblCpfOrCnpj");
@@ -233,22 +231,6 @@ $(document).ready(function(){
     })
     
  });
- 
- /* $.ajax({
-            type: "POST",
-            url: "YOURURL",
-            data:{
-                edited_question: editedQuestionObj,
-                question: editedQuestionId
-            },
-            success: function(){
-                modalObj.dialog('close');
-                modalObj.html('');
-            },
-            complete: function(){
-                //window.location.reload(true);
-            }
-        });*/
  
 
 

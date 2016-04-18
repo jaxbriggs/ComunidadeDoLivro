@@ -61,6 +61,12 @@ $('#cadastro_btn').click(function(e) {
         }
       }
     );
+    
+   if($("#userId").val() === ""){
+        $("#menu-toggle-2").css("display", "none");
+    } else {
+        $("#menu-toggle-2").css("display", "inline");
+    }
 }
 
 $(document).ready(function() {

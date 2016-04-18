@@ -72,17 +72,13 @@ public class TransactionsServlet extends HttpServlet {
             JsonObject jobj = new Gson().fromJson(userIdAndIndex, JsonObject.class);
             
             userId = jobj.get("userId").getAsInt();
-            booksLimit = jobj.get("booksLimit").getAsInt();
             
             TransacaoDAO tdao = new TransacaoDAO();
             List<Transacao> transacoes = new ArrayList<Transacao>();
             String qtdLivros = "";
             
             try {
-                transacoes = tdao.getLivrosByUsuario(userId, booksLimit);
-                if(transacoes != null){
-                    qtdLivros = ",{\"qtdLivros\":\"" + tdao.getAmountOfBooksByUser(userId) + "\"}]";
-                }
+                transacoes = tdao.getLivrosByUsuario(userId);
             } catch (SQLException ex) {
                 result = "{\"resultado\":\"erro-banco\"}";
                 ex.printStackTrace();
@@ -100,7 +96,7 @@ public class TransactionsServlet extends HttpServlet {
             if(transacoes.isEmpty()){
                 result = "{\"resultado\":\"nada\"}";
             } else {
-                result = ObjectJson.getObjectJson(transacoes).replace("]", qtdLivros);
+                result = ObjectJson.getObjectJson(transacoes);
             }
         }
         

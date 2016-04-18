@@ -1,11 +1,21 @@
+//Global scope
+var maxPerPage = 12; //Qtd MAXima de livros por pagina
+var minPerPage = 2; //Qtd MINima de livros por pagina
+
 $(document).ready (function(){
 
     //Pega todas as transacoes do usuario e monta a lista dinamicamente
     getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());
 
-    $("#comboQtdPaginacao").change(function(){
-        getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());        
-    });    
+    //Configura o select para fazer o select ao trocar a quantidade de itens por pagina
+    $("#comboQtdPaginacao").bind("change", function(e) {
+        getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());
+    });
+
+    //Configura o campo de texto do meuno superior para executar consultar ao ser modificado
+    $("#meusLivrosSearchTxt").bind("input", function() {
+        consultarMeusLivros($(this).val());
+    });
 
     //Esconde a mensagem de livro cadastrado com sucesso
     $("#alertCadastroSucesso").hide();
@@ -23,6 +33,7 @@ function doarLivro(trasacaoId, doarSimNao,qtdLivrosDoados){
             //implementar
         },
         fail: function() {
+            //implementar
             alert( "error" );
         },
         always: function() {
@@ -40,7 +51,12 @@ function removerTransaco(trasacaoId){
         data: {remocaoJson: JSON.stringify({tId:trasacaoId, remover:true})},   
         dataType: 'json',
         success: function(data){
-            console.log(data);
+            console.log(data.success === true);
+            if(data.success === true){
+                getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());
+            } else {
+                //Implementar erro
+            }
         },
         fail: function() {
             console.log( "error" );
@@ -52,36 +68,63 @@ function removerTransaco(trasacaoId){
 }
 
 function getAllTransacoesByUserWithLimit(userId, limit){
+
     jQuery.ajax({
         url: '/transactions',
         type: 'GET',
         contentType: 'application/json',
-        data: {getAllTransacoesByUserWithIndex: JSON.stringify({userId:userId, booksLimit:limit})},   
+        data: {getAllTransacoesByUserWithIndex: JSON.stringify({userId:userId})},   
         dataType: 'json',
         success: function(data){
             console.log("success");
-            var qtdPaginas = Math.ceil((data[data.length-1].qtdLivros)/$("#comboQtdPaginacao").val());
-            $("#painelMeusLivrosPaginator").paginate({
-                count                   : qtdPaginas, 
-                start                   : 1,
-                display                 : qtdPaginas,
-                border                  : true,
-                border_color            : '#BEF8B8',
-                text_color              : '#68BA64',
-                background_color        : '#E3F2E1',    
-                border_hover_color      : '#68BA64',
-                text_hover_color        : 'black',
-                background_hover_color  : '#CAE6C6', 
-                rotate                  : false,
-                images                  : false,
-                mouse                   : 'press',
-                onChange                : function(page){
-                                            $('._current','#meusLivrosPaginator').removeClass('_current').hide();
-                                            $('#p'+page).addClass('_current').show();
-                                          }
-            });
 
-            buildBooksList(data);
+            if(!(data.resultado === "nada")){
+                $("#alertSemLivros").hide();
+                buildBooksList(data);
+
+                var qtdPaginas = Math.ceil(data.length/$("#comboQtdPaginacao").val());
+                
+                if(data.length > minPerPage){ 
+                    $("#comboQtdPaginacao").show();
+                    $("#porPagLabel").show();
+                } else {
+                    $("#comboQtdPaginacao").hide();
+                    $("#porPagLabel").hide();
+                }
+
+                $("#painelMeusLivrosPaginator").paginate({
+                    count                   : qtdPaginas, 
+                    start                   : 1,
+                    display                 : 10,
+                    border                  : true,
+                    border_color            : 'gray',
+                    text_color              : 'white',
+                    background_color        : 'gray',    
+                    border_hover_color      : 'gray',
+                    text_hover_color        : 'gray',
+                    background_hover_color  : 'white', 
+                    rotate                  : false,
+                    images                  : false,
+                    mouse                   : 'press',
+                    onChange                : function(page){
+                                                var results = 0;
+                                                for(i = 1; i <= page; i++){
+                                                    results += $("#meusLivrosPaginator").find("#p"+i)[0].childElementCount
+                                                }
+                                                $("#meusLivrosPaginator").find("p")[0].innerHTML = "Resultados: <b>" + results + "</b> de  <b>" + data.length; + "</b>";
+                                                $('._current','#meusLivrosPaginator').removeClass('_current').hide();
+                                                $('#p'+page).addClass('_current').show();
+                                              }
+                });
+            } else {
+                //Esconde as ocoes de paginacao e limpa o container paginado
+                $("#comboQtdPaginacao").hide();
+                $("#porPagLabel").hide();
+                $("#meusLivrosPaginator").get(0).innerHTML = "";
+
+                //Exibe a mensagem de nenhum livro cadastrado
+                $("#alertSemLivros").show();
+            }            
         },
         fail: function() {
             console.log( "error" );
@@ -93,30 +136,50 @@ function getAllTransacoesByUserWithLimit(userId, limit){
 }
 
 function buildBooksList(data){
+    var contagem = 0;
+    var id = 1;
+    var numPerPage = parseInt($("#comboQtdPaginacao").val());
+    var divMaster = "";
+    var html = "";
+    var results = 0;
+
+    var emptyPainel = $("#painelMeusLivrosPaginator");
     
-        var contagem = 1;
-        var id = 1;
-        var numPerPage = 5;
-        var divMaster = "";
-        var html = "";
+    $("#meusLivrosPaginator").get(0).innerHTML = "<p class=\"col-xs-offset-5 col-xs-10\"></p><div id=\"painelMeusLivrosPaginator\" class=\"col-xs-offset-5 col-xs-10\"></div>";
 
-        $("#meusLivrosPaginator").innerHTML = "";
+    for(i = 0; i < data.length; i++){
 
-        for(i = 0; i < data.length-1; i++){
-            divMaster = "";
-            if(contagem % numPerPage == 0 || contagem == 1){
-                if(contagem == 1){
-                    divMaster = "<div id=\"p" + (id++) + "\" class=\"_current\" style=\"\">";
+        divMaster = "";            
+
+        if(contagem === 0 || contagem % numPerPage === 0){
+            if(contagem === 0){
+                if(Math.ceil(data.length/$("#comboQtdPaginacao").val()) === 1){
+                    results = data.length;
                 } else {
-                    divMaster = "<div id=\"p" + (id++) + "\" class=\"\" style=\"\">";
+                    results = $("#comboQtdPaginacao").val()
                 }
+
+                if(!(typeof $("#meusLivrosPaginator").find("p")[0] === "undefined")){
+                    $("#meusLivrosPaginator").find("p")[0].innerHTML = "Resultados: <b>" + results + "</b> de  <b>" + data.length; + "</b>";
+                }
+
+                divMaster = "<div id=\"p" + (id++) + "\" class=\"bookCont _current\" style=\"\">";
+            } else {
+                results = id;
+                divMaster = "<div id=\"p" + (id++) + "\" class=\"bookCont\" style=\"display:none;\">";
             }
-        
+        }
+    
 
         html += divMaster;
 
+        if(data[i].livro.capaLink === ""){
+            data[i].livro.capaLink = "https://docs.google.com/uc?id=0B03XPxH14xDTZS05WTNCNTJPZW8&export=download"
+        }
+
+        //INICIO DA ROW DO LIVRO
         html +=
-        "<div class=\"row\" style=\"padding-top:10px;\">" + 
+        "<div class=\"livroRow row\" id=\""+(data[i].livro.titulo + " " + data[i].livro.isbn + " " + data[i].livro.autor)+"\" style=\"padding-top:10px;\">" + 
                 "<div class=\"col-xs-2 visible-lg\" style=\"text-align: right;\">" +
                     "<a class=\"img-thumbnail\">" +
                         "<img id=\"imgCapa\" src=\""+data[i].livro.capaLink+"\" height=\"211px\" width=\"128px\" />" +
@@ -124,7 +187,7 @@ function buildBooksList(data){
                 "</div>" +
                 "<div class=\"col-xs-10\" style=\"align-items: center;\">" +
                     "<div style=\"\">" +
-                        "<h4><b>"+data[i].livro.titulo+" (" + data[i].livro.isbn + ")</b></h4>" +
+                        "<h4><b class=\"livroTitulo\">"+data[i].livro.titulo+" (" + data[i].livro.isbn + ")</b></h4>" +
                         "<p>";
 
                         if(!(data[i].livro.autor === "")){
@@ -153,13 +216,35 @@ function buildBooksList(data){
                     html +=   
                     "</div>" +
                     "<div>" +
-                        "<p style=\"float: bottom; padding-top: 2%;\">" +
-                            "<span class=\"label label-default\">Default</span>" +
-                            "<span class=\"label label-primary\">Primary</span>" +
-                            "<span class=\"label label-success\">Success</span>" +
-                            "<span class=\"label label-info\">Info</span>" +
-                            "<span class=\"label label-warning\">Warning</span>" +
-                            "<span class=\"label label-danger\">Danger</span>" +
+                        "<p style=\"float: bottom; padding-top: 2%;\">";
+
+                            //Verificacao de labels
+                            if(data[i].livro.genero !== ""){
+                                 html += 
+                                 "<span class=\"label label-danger\">"+data[i].livro.genero+"</span>\n";
+                            }
+
+                            if(data[i].isAutorizada){
+                                html += 
+                                "<span class=\"label label-primary\">Em Transação</span>\n";
+
+                                /*
+                                "<span class=\"label label-default\">Default</span>\n" +
+                                "<span class=\"label label-primary\">Primary</span>\n" +
+                                "<span class=\"label label-success\">Success</span>\n" +
+                                "<span class=\"label label-info\">Info</span>\n" +
+                                "<span class=\"label label-warning\">Warning</span>\n" +
+                                "<span class=\"label label-danger\">Danger</span>\n"; 
+                                */
+                            }
+
+                            if(data[i].isAtivada){
+                                html += 
+                                "<span class=\"label label-warning\">Quantidade: "+data[i].qtLivroTransacao+"</span>\n" + 
+                                "<span class=\"label label-success\">Disponível Para Doação</span>\n";
+                            }
+
+                        html +=  
                         "<div style=\"float:right; margin-top:-3%;\" class=\"row\">" +
                             "<div class=\"col-xs-6\">" +
                                 "<a href=\"#\" title='Remover' data-toggle=\"remover\" class=\"remocaoLivro\" id=\"rem"+data[i].cdTransacao+"\"><img height=\"32px\" width=\"32px\" src=\"../custom-resources/img/delete_img.png\"/></a>" +
@@ -176,11 +261,14 @@ function buildBooksList(data){
                 "</div>" +
                 "<hr>" +
             "</div>";
+
             contagem++;
+
             if(contagem % numPerPage === 0){
                 html += "</div>";
             }
     }
+
     var phtml = $.parseHTML(html);
     $("#meusLivrosPaginator").append(phtml);
 
@@ -208,6 +296,39 @@ function buildBooksList(data){
     $("#meusLivrosPaginator").find($(".remocaoLivro")).click(function() {
         removerTransaco($(this).attr("id").substr(3, $(this).attr("id").length - 1));
     });    
-}   
+} 
+
+function consultarMeusLivros(text){
+    if(text.length > 0){
+        $("#meusLivrosPaginator").hide();
+        $("#comboQtdPaginacao").hide();
+        $("#porPagLabel").hide();
+
+        //Faz a consulta na div de livros e monta o resultado da consulta dinamicamente
+        var livros = $("#meusLivrosPaginator").find(".livroRow");
+        var booksToBeReturned = []; //Array de objetos
+
+        for(i = 0; i < livros.length; i++) {
+            if(livros[i].id.toLowerCase().match(new RegExp(text)) !== null){
+                booksToBeReturned.push(livros[i]);
+            }
+        }
+
+        $("#pesquisaResultados").empty();
+        if(!(booksToBeReturned.length === 0)){
+            $('#alertConsultaSemResultados').hide();
+            $(booksToBeReturned).clone().appendTo("#pesquisaResultados");
+        } else {
+            $('#alertConsultaSemResultados').show();
+        }
+
+    } else {
+        $("#pesquisaResultados").empty();
+        $("#meusLivrosPaginator").show();
+        $("#comboQtdPaginacao").show();
+        $("#porPagLabel").show();
+        $('#alertConsultaSemResultados').hide();
+    }
+}  
 
 

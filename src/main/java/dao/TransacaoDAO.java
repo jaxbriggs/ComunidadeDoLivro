@@ -20,7 +20,7 @@ import model.Transacao;
  */
 public class TransacaoDAO {
     
-    public List<Transacao> getLivrosByUsuario(Integer cdUsuario, Integer limit) throws URISyntaxException, SQLException {
+    public List<Transacao> getLivrosByUsuario(Integer cdUsuario) throws URISyntaxException, SQLException {
         
         List<Transacao> transacoes = new ArrayList<Transacao>();
         
@@ -36,7 +36,7 @@ public class TransacaoDAO {
                         " from comunidade_do_livro.transacao t1" +
                         " where t1.cd_doador_usuario_transacao = " + cdUsuario + " and" +
                         " t1.cd_usuario_cadastrante = " + cdUsuario +  
-                        " order by t1.dt_cadastro_transacao desc" + (limit != null ? (" limit " + limit) : ";");
+                        " order by t1.dt_cadastro_transacao desc;";
         
         Connection conn = database.Connection.getConnection();
         ResultSet rs;

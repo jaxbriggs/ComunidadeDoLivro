@@ -13,8 +13,6 @@
     }
     
     if(session.getAttribute("user") != null){
-            TransacaoDAO TransacaoDAO = new TransacaoDAO();        
-            transacoes.addAll(TransacaoDAO.getLivrosByUsuario(((User)session.getAttribute("user")).getId(), null));
 %>
 
 <!DOCTYPE html>
@@ -150,17 +148,18 @@
                     <form class="navbar-form navbar-right" role="search">
                         <div class="form-group" style="display: table;">
                             <div style="margin-right: 15%;">
-                                <label>Exibição por página: </label>
+                                <label id="porPagLabel">Exibição por página: </label>
                                 <select class="form-control" id="comboQtdPaginacao"><!-- SELECT EXIBICAO POR PAGINA -->
-                                    <option value="2">2</option>
-                                    <option value="4" selected="selected">4</option>
+                                    <option value="2" selected="selected">2</option>
+                                    <option value="4">4</option>
                                     <option value="8">8</option>
                                     <option value="10">10</option>
                                     <option value="12">12</option>
                                 </select>
                             </div>
                             <span style="width: 1%;" class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                            <input type="text" class="form-control" placeholder="Título ou ISBN">
+                            <!-- Campo de texto para pesquisa em meus livros -->
+                            <input type="text" id="meusLivrosSearchTxt" class="form-control" placeholder="Título, ISBN ou Autor">
                         </div> 
                     </form>
                 </div>
@@ -170,23 +169,33 @@
     <!-- FIM MENU SUPERIOR -->
 
     <div class="container-fluid"><!-- INICIO CONTAINER LIVROS -->
-        <!-- ALERT DE SUCESSO AO CADASTRAR LIVRO -->
+        <!-- ALERTS -->
         <div class="row">
             <div class="col-xs-12">
-                <div class="alert alert-success" role="alert" id="alertCadastroSucesso">
+                <div class="alert alert-success" role="alert" id="alertCadastroSucesso" style="display: none;">
                     <strong>Aviso!</strong> O livro foi cadastrado com sucesso.
+                </div>
+                <div class="alert alert-info col-xs-offset-3 col-xs-6" role="alert" id="alertSemLivros" style="display: none; text-align: center;">
+                    <strong>Sem livros!</strong> Não há livros cadastrados no momento.
+                </div>
+                <div class="alert alert-info col-xs-offset-3 col-xs-6" role="alert" id="alertConsultaSemResultados" style="display: none; text-align: center;">
+                    <strong>Ops!</strong> A consulta não retornou nenhum resultado.
                 </div>
             </div>
         </div>
-        <!-- FIM ALERT SUCESSO-->
+        <!-- FIM ALERTS-->
 
         <!-- LISTA DE LIVROS CADASTRADOS -->
-<div class="row" style="margin-bottom: 20%;">
-    <div class="col-xs-offset-1 col-xs-10">
-        <div id="meusLivrosPaginator" >
-            <div id="painelMeusLivrosPaginator" class="col-xs-offset-5 col-xs-10">                   
-            </div>                
-        </div>
+    <div class="row" style="margin-bottom: 20%;">
+        <div class="col-xs-offset-1 col-xs-10">
+            <div id="meusLivrosPaginator" >
+                <p class="col-xs-offset-5 col-xs-10"></p>
+                <div id="painelMeusLivrosPaginator" class="col-xs-offset-5 col-xs-10">                   
+                </div>                
+            </div>
+            <div id="pesquisaResultados" >
+
+            </div>
         </div>
     </div>
     <!-- FIM DA LISTA DE LIVROS CADASTRADOS -->

@@ -163,6 +163,9 @@ $(document).ready(function() {
                                 $("#alertCadastroSucesso").fadeTo(2000, 500).slideUp(500, function(){
                                     $("#alertCadastroSucesso").hide();
                                 });
+                                
+                                //Pega todas as transacoes do usuario e monta a lista dinamicamente
+                                getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());
                             } else {
                                 //Erro ao cadastrar livro
                                 $("#alertCadastroFalha").show();
@@ -192,6 +195,9 @@ $(document).ready(function() {
                         $("#alertCadastroSucesso").hide();
                     });
                     $('#modal_novo_livro').modal('toggle');
+                    
+                    //Pega todas as transacoes do usuario e monta a lista dinamicamente
+                    getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());
                 } else {
                     $("#alertCadastroFalha").show();
                     $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){

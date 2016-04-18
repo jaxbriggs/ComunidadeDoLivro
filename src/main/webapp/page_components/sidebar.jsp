@@ -1,4 +1,13 @@
+<%
+  User user = null;
+  if(session.getAttribute("user") != null){
+    user = ((User)session.getAttribute("user"));
+  }
+%>
 <meta charset="ISO-8859-1"/>
+<form>
+    <input type="hidden" id="userId" value="<%= user != null ? user.getId() : "" %>">
+</form>
 <script src="jquery/jquery-1.12.1.min.js"></script>
         <script src="custom-resources/js/jquery.redirect.js"></script>
         <script src="custom-resources/js/index-script.js"></script>
