@@ -9,10 +9,10 @@
     <input type="hidden" id="userId" value="<%= user != null ? user.getId() : "" %>">
 </form>
 <script src="jquery/jquery-1.12.1.min.js"></script>
-        <script src="custom-resources/js/jquery.redirect.js"></script>
-        <script src="custom-resources/js/index-script.js"></script>
-        <script src="custom-resources/js/ajax/requests.js"></script>
-        <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+<script src="custom-resources/js/jquery.redirect.js"></script>
+<script src="custom-resources/js/index-script.js"></script>
+<script src="custom-resources/js/ajax/requests.js"></script>
+<script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
         
 <!-- ======================================================================================== -->
 <!-- ================================= MODALS =============================================== -->
@@ -161,7 +161,7 @@
             </button>
             <table id="header" border="0">
                 <tr>
-                    <td align="center" style="width: 35%;"><a href="#"><img src="../custom-resources/img/logo.png" width="55" height="55"/></a></td>
+                    <td align="center" style="width: 35%;"><a><img src="../custom-resources/img/logo.png" width="55" height="55"/></a></td>
                     <td align="left" style="width: 65%; padding-left:1%;"><h1 id="title">Comunidade do Livro</h1></td>
                 </tr>
             </table>
@@ -211,35 +211,35 @@
         </form>     
             <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
                 <li id="menu_livros">
-                    <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-book fa-stack-1x "></i></span> Livros</a>
+                    <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-book fa-stack-1x "></i></span> Livros</a>
                        <ul class="nav-pills nav-stacked" style="list-style-type:none;">
-                            <li id="menu_meus_livros" onClick="loadPageByPickedMenu('#menu_meus_livros', '/meus_livros');"><a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-archive fa-stack-1x "></i></span>Meus</a></li>
-                            <li id="menu_livros_em_doacao" onClick="loadPageByPickedMenu('#menu_livros_em_doacao', '/sendo_doados');"><a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-shopping-basket fa-stack-1x "></i></span>Sendo Doados</a></li>
-                            <li id="menu_livros_em_pedidos" onClick="loadPageByPickedMenu('#menu_livros_em_pedidos', '/sendo_pedidos');"><a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-child fa-stack-1x "></i></span>Sendo Pedidos</a></li>
+                            <li id="menu_meus_livros" onClick="loadPageByPickedMenu('#menu_meus_livros', '/meus_livros');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-archive fa-stack-1x "></i></span>Meus</a></li>
+                            <li id="menu_livros_em_doacao" onClick="loadPageByPickedMenu('#menu_livros_em_doacao', '/sendo_doados');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-shopping-basket fa-stack-1x "></i></span>Sendo Doados</a></li>
+                            <li id="menu_livros_em_pedidos" onClick="loadPageByPickedMenu('#menu_livros_em_pedidos', '/sendo_pedidos');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-child fa-stack-1x "></i></span>Sendo Pedidos</a></li>
                         </ul>
                 </li>
                 <li>
-                    <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-exchange fa-stack-1x "></i></span> Transações</a>
+                    <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-exchange fa-stack-1x "></i></span> Transações</a>
                        <ul class="nav-pills nav-stacked" style="list-style-type:none;">
-                           <li id="minhas_doacoes" onClick="loadPageByPickedMenu('#minhas_doacoes', '/minhas_doacoes');"><a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-hand-paper-o fa-stack-1x "></i></span>Minhas Doações</a></li>
-                            <li id="meus_recebimentos" onClick="loadPageByPickedMenu('#meus_recebimentos', '/meus_recebimentos');"><a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-hand-grab-o fa-stack-1x "></i></span>Meus Recebimentos</a></li>
+                           <li id="minhas_doacoes" onClick="loadPageByPickedMenu('#minhas_doacoes', '/minhas_doacoes');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-hand-paper-o fa-stack-1x "></i></span>Minhas Doações</a></li>
+                            <li id="meus_recebimentos" onClick="loadPageByPickedMenu('#meus_recebimentos', '/meus_recebimentos');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-hand-grab-o fa-stack-1x "></i></span>Meus Recebimentos</a></li>
                         </ul>
                 </li>
                 <li>
-                    <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-child fa-stack-1x "></i></span> Pedidos</a>
+                    <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-child fa-stack-1x "></i></span> Pedidos</a>
                        <ul class="nav-pills nav-stacked" style="list-style-type:none;">
-                           <li id="meus_pedidos" onClick="loadPageByPickedMenu('#meus_pedidos', '/meus_pedidos');"><a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-user fa-stack-1x "></i></span>Meus</a></li>
-                            <li id="pedidos_de_outros" onClick="loadPageByPickedMenu('#pedidos_de_outros', '/pedidos_de_outros');"><a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-users fa-stack-1x "></i></span>De Outros</a></li>
+                           <li id="meus_pedidos" onClick="loadPageByPickedMenu('#meus_pedidos', '/meus_pedidos');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-user fa-stack-1x "></i></span>Meus</a></li>
+                            <li id="pedidos_de_outros" onClick="loadPageByPickedMenu('#pedidos_de_outros', '/pedidos_de_outros');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-users fa-stack-1x "></i></span>De Outros</a></li>
                         </ul>
                 </li>
                 <li id="usuarios" onClick="loadPageByPickedMenu('#usuarios', '/usuarios');">
-                    <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-users fa-stack-1x "></i></span> Usuários</a>
+                    <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-users fa-stack-1x "></i></span> Usuários</a>
                 </li>
                 <li id="configuracoes" onClick="loadPageByPickedMenu('#configuracoes', '/configuracoes');">
-                    <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-cog fa-stack-1x "></i></span> Configurações</a>
+                    <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-cog fa-stack-1x "></i></span> Configurações</a>
                 </li>
                 <!--<li>
-                    <a onClick="setPick('sair'); submitPickSenderForm();" href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-sign-out fa-stack-1x "></i></span> Sair</a>
+                    <a onClick="setPick('sair'); submitPickSenderForm();"><span class="fa-stack fa-lg pull-left"><i class="fa fa-sign-out fa-stack-1x "></i></span> Sair</a>
                 </li>-->
             </ul>
 

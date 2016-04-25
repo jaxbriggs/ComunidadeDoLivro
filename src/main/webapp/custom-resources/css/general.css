@@ -28,17 +28,8 @@
 }
 
 #index_body {
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
-
-#object_data {
-    overflow: scroll;
-}
-
-body {
-    overflow: hidden;
-}
-
 
 .ui-autocomplete {
     z-index: 1051;
@@ -52,3 +43,6 @@ body {
     z-index: 1052;
 }
 
+.qtdTag, a {
+    cursor: pointer;
+}

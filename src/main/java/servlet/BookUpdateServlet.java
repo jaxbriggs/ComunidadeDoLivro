@@ -41,6 +41,9 @@ public class BookUpdateServlet extends HttpServlet {
         //Variavel que aponta o resultado das transacoes com o banco
         boolean sucesso = false;
         
+        //Variavel que aponta o codigo das transacoes que acabaram de ser alteradas
+        Integer rs = null;
+        
         response.setContentType("application/json");
         
         //Tenta pegar os parametros possiveis
@@ -67,8 +70,8 @@ public class BookUpdateServlet extends HttpServlet {
             //Altera a transacao no banco
             sucesso = false;
             try {
-                int rs = dao.alterarDoacaoLivroTransacao(transacaoId, doar, qtdLivrosSendoDoados);
-                sucesso = rs > 0;
+                rs = dao.alterarDoacaoLivroTransacao(transacaoId, doar, qtdLivrosSendoDoados);
+                sucesso = rs != null;
             } catch (SQLException ex) {
                 sucesso = false;
                 ex.printStackTrace();
@@ -97,8 +100,8 @@ public class BookUpdateServlet extends HttpServlet {
             //Remove a transacao no banco
             sucesso = false;
             try {
-                int rs = dao.removerDoacaoLivroTransacao(transacaoId);
-                sucesso = rs > 0;
+                rs = dao.removerDoacaoLivroTransacao(transacaoId);
+                sucesso = rs != null;
             } catch (SQLException ex) {
                 sucesso = false;
                 ex.printStackTrace();
@@ -111,7 +114,7 @@ public class BookUpdateServlet extends HttpServlet {
         //Retorna o JSON
         PrintWriter out = response.getWriter();
         
-        String r = "{\"success\":"+ String.valueOf(sucesso) +"}";
+        String r = "{\"success\":"+ String.valueOf(sucesso) +", \"transacaoId\":"+rs+"}";
         out.print(r);
         out.flush();        
     }

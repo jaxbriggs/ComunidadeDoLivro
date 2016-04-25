@@ -15,6 +15,7 @@ import java.util.Date;
  */
 public class Transacao implements Serializable {
     private Integer cdTransacao;
+    private Integer rowNum;
     private User doador;
     private User donatario;
     private User cadastrante;
@@ -39,6 +40,22 @@ public class Transacao implements Serializable {
 
     public void setCdTransacao(Integer cdTransacao) {
         this.cdTransacao = cdTransacao;
+    }
+
+    public Integer getRowNum() {
+        return rowNum;
+    }
+
+    public void setRowNum(Integer rowNum) {
+        this.rowNum = rowNum;
+    }
+
+    public SimpleDateFormat getFt() {
+        return ft;
+    }
+
+    public void setFt(SimpleDateFormat ft) {
+        this.ft = ft;
     }
 
     public User getDoador() {

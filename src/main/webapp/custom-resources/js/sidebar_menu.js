@@ -39,6 +39,11 @@ $('#login_btn').click(function(e) {
     $('#modal_login').modal('toggle');
 });
 
+//Quando o modal login e aberto focar no campo de login
+$('#modal_login').on('shown.bs.modal', function () {
+  $('#login').focus()
+})
+
 //Abre o modal do cadstro
 $('#cadastro_btn').click(function(e) {
     $('#modal_cadastro').modal('toggle');

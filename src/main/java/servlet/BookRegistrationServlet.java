@@ -80,12 +80,20 @@ public class BookRegistrationServlet extends HttpServlet {
         
         //Grava o livro no banco
         boolean sucesso = false;
+        Integer cdTransacao = null;
+        Integer cdLivro = null;
         try {
-            sucesso = dao.registerLivro(livro);
+            cdLivro = dao.registerLivro(livro);
+            if(cdLivro != null){
+                sucesso = false;
+            } 
+            sucesso = true;
         } catch (SQLException ex) {
             ex.printStackTrace();
+            sucesso = false;
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
+            sucesso = false;
         }
         
         //Grava o livro como uma transacao nao iniciada
@@ -116,11 +124,13 @@ public class BookRegistrationServlet extends HttpServlet {
             
             TransacaoDAO tDao = new TransacaoDAO();
             try {
-                tDao.registerTransacao(t);
+                cdTransacao = tDao.registerTransacao(t);
             } catch (SQLException ex) {
                 ex.printStackTrace();
+                sucesso = false;
             } catch (URISyntaxException ex) {
                 ex.printStackTrace();
+                sucesso = false;
             }
         }
         
@@ -128,7 +138,7 @@ public class BookRegistrationServlet extends HttpServlet {
         //Retorna o JSON
         PrintWriter out = response.getWriter();
         
-        String r = "{\"success\":"+ String.valueOf(sucesso) +"}";
+        String r = "{\"success\":"+ String.valueOf(sucesso) +", \"cdTransacao\":"+cdTransacao+"}";
         out.print(r);
         out.flush();        
     }

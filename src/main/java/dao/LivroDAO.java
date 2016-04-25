@@ -20,7 +20,7 @@ import model.Livro;
  */
 public class LivroDAO {
     
-    public boolean registerLivro(Livro l) throws SQLException, URISyntaxException {
+    public Integer registerLivro(Livro l) throws SQLException, URISyntaxException {
         
         if(!isLivroISBNAlreadyRegistered(l)){
             String insertLivro = "INSERT INTO comunidade_do_livro.Livro\n" +
@@ -35,7 +35,7 @@ public class LivroDAO {
                                  "	im_capa_livro,\n" +
                                  "	nm_idioma_livro,\n" +
                                  "	cd_isbn_livro\n" +
-                                 ") VALUES (?,?,?,?,?,?,?,?,?,?);";
+                                 ") VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING cd_livro;";
 
             Connection conn = database.Connection.getConnection();
             PreparedStatement pstmt = null;
@@ -56,16 +56,19 @@ public class LivroDAO {
                 pstmt.setString(9, l.getIdioma());
                 pstmt.setString(10, l.getIsbn());
 
-                return !pstmt.execute();
+                ResultSet rs = pstmt.executeQuery();
+                while(rs.next()){
+                    return rs.getInt(1);
+                }
             } catch (SQLException ex) {
                 ex.printStackTrace();
             } finally {
                 pstmt.close();
                 conn.close();
             }
-            return false;
+            return null;
         } else {
-            return true;
+            return -1;
         }                
     }
     

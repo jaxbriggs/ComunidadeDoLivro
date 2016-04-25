@@ -31,14 +31,13 @@
         <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
         <script src="../custom-resources/js/ajax/requests.js"></script>
         <script src="../custom-resources/js/novo_livro.js"></script>
-        <script src="../custom-resources/js/meus_livros.js"></script>
-        <script src="../jPaginate/jquery.paginate.js"></script>
+        <script src="../custom-resources/js/meus_livros.js"></script>        
     </head>
 
     <body>
         <!--MODAL NOVO LIVRO-->
         <div class="modal fade" id="modal_novo_livro" tabindex="-1" role="dialog" aria-labelledby="modalNovoLivro">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog" role="document" style="margin-bottom: 5%;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -115,6 +114,8 @@
                             <input type="hidden" id="capa" name="capa" value="" />
                             <!--campo hidden para enviar o id do usuario-->
                             <input type="hidden" id="userId" name="userId" value="<%= ((User)session.getAttribute("user")) != null ? ((User)session.getAttribute("user")).getId() : null %>" />
+                            <!--campo hidden para enviar o filtro-->
+                            <input type="hidden" id="filtroId" name="filtroId" value="3" />
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -137,31 +138,32 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#"><span><i class="fa fa-archive"></i></span> Meus Livros</a>
+                    <a class="navbar-brand"><span><i class="fa fa-archive"></i></span> Meus Livros</a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li class=""><a id="btnNovoLivro" href="#"><span><i class="fa fa-plus fa-lg"></i></span> Novo Livro </a></li>
-                    </ul>
-                    <form class="navbar-form navbar-right" role="search">
-                        <div class="form-group" style="display: table;">
-                            <div style="margin-right: 15%;">
-                                <label id="porPagLabel">Exibição por página: </label>
-                                <select class="form-control" id="comboQtdPaginacao"><!-- SELECT EXIBICAO POR PAGINA -->
-                                    <option value="2" selected="selected">2</option>
-                                    <option value="4">4</option>
-                                    <option value="8">8</option>
-                                    <option value="10">10</option>
-                                    <option value="12">12</option>
-                                </select>
-                            </div>
+                    <ul class="nav navbar-nav col-xs-10">
+                        <li class="col-xs-5"><a id="btnNovoLivro"><span><i class="fa fa-plus fa-lg"></i></span> Novo Livro </a></li>
+                        <li class="col-xs-6" style="display: table; margin: 1% 0;">
                             <span style="width: 1%;" class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
                             <!-- Campo de texto para pesquisa em meus livros -->
                             <input type="text" id="meusLivrosSearchTxt" class="form-control" placeholder="Título, ISBN ou Autor">
-                        </div> 
-                    </form>
+                        </li>
+                        <li class="dropdown col-xs-1" style="display: table; float: right;">
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Filtro <span class="caret"></span></a>
+                            <ul class="dropdown-menu" id="drop-filtro">
+                              <li><a value="1">A..Z</a></li>
+                              <li><a value="2">Z..A</a></li>
+                              <li role="separator" class="divider"></li>
+                              <li><a value="3">Recentes..Antigos</a></li>
+                              <li><a value="4">Antigos..Recentes</a></li>
+                              <li role="separator" class="divider"></li>
+                              <li><a value="5">Em doação</a></li>
+                              <li><a value="6">Em transação</a></li>
+                            </ul>
+                          </li>
+                    </ul>                
                 </div>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
@@ -186,15 +188,10 @@
         <!-- FIM ALERTS-->
 
         <!-- LISTA DE LIVROS CADASTRADOS -->
-    <div class="row" style="margin-bottom: 20%;">
+    <div class="row" style="margin-bottom: 10%;">
         <div class="col-xs-offset-1 col-xs-10">
             <div id="meusLivrosPaginator" >
-                <p class="col-xs-offset-5 col-xs-10"></p>
-                <div id="painelMeusLivrosPaginator" class="col-xs-offset-5 col-xs-10">                   
-                </div>                
-            </div>
-            <div id="pesquisaResultados" >
-
+                
             </div>
         </div>
     </div>

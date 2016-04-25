@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import model.Transacao;
 
@@ -20,7 +22,8 @@ import model.Transacao;
  */
 public class TransacaoDAO {
     
-    public List<Transacao> getLivrosByUsuario(Integer cdUsuario) throws URISyntaxException, SQLException {
+    //Consultas
+    public List<Transacao> getLivrosByUsuario(Integer cdUsuario, Integer limit, Integer filtro) throws URISyntaxException, SQLException {
         
         List<Transacao> transacoes = new ArrayList<Transacao>();
         
@@ -34,9 +37,41 @@ public class TransacaoDAO {
                         "t1.dt_cadastro_transacao," +
                         "t1.dt_transacao_finalizada" +
                         " from comunidade_do_livro.transacao t1" +
+                        " inner join comunidade_do_livro.livro l1 on ( l1.cd_livro = t1.cd_livro_transacao )" +
                         " where t1.cd_doador_usuario_transacao = " + cdUsuario + " and" +
-                        " t1.cd_usuario_cadastrante = " + cdUsuario +  
-                        " order by t1.dt_cadastro_transacao desc;";
+                        " t1.cd_usuario_cadastrante = " + cdUsuario +                      
+                        " order by";
+                        
+                        switch(filtro){
+                            case 1:
+                                query +=
+                                " l1.nm_titulo_livro asc "+ (limit != null ? ("limit " + limit + ";") : ";");
+                                break;
+                            case 2:
+                                query +=
+                                " l1.nm_titulo_livro desc "+ (limit != null ? ("limit " + limit + ";") : ";");    
+                                break;
+                            case 3:
+                                query +=
+                                " t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit " + limit + ";") : ";");
+                                break;
+                            case 4:
+                                query +=
+                                " t1.dt_cadastro_transacao asc "+ (limit != null ? ("limit " + limit + ";") : ";");
+                                break;
+                            case 5:
+                                query +=
+                                " t1.ic_transacao_ativa_sim_nao desc, t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit " + limit + ";") : ";");
+                                break;
+                            case 6:
+                                query +=
+                                " t1.ic_transacao_autorizada_sim_nao desc, t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit " + limit + ";") : ";");
+                                break;
+                            default:
+                                query +=
+                                " t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit " + limit + ";") : ";");
+                                break;
+                        }
         
         Connection conn = database.Connection.getConnection();
         ResultSet rs;
@@ -76,29 +111,84 @@ public class TransacaoDAO {
         }
     }
     
-    public Integer getAmountOfBooksByUser(Integer userId) throws SQLException, URISyntaxException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("select count(*) from comunidade_do_livro.transacao");
-        builder.append(" where cd_doador_usuario_transacao = ");
-        builder.append(userId);
-        builder.append(" and");                
-        builder.append(" cd_usuario_cadastrante = ");
-        builder.append(userId);
-        builder.append(";");
+    public List<Transacao> getNextLivrosByLastTransacao(Integer threshold, Integer limit, Integer cdUsuario, Integer filtro) throws URISyntaxException, SQLException {
+        List<Transacao> transacoes = new ArrayList<Transacao>();
+        
+        String query = "select t1.cd_transacao," +
+                        " t1.cd_livro_transacao," +
+                        " t1.ic_transacao_finalizada_sim_nao," +
+                        " t1.ic_transacao_autorizada_sim_nao," +
+                        " t1.ic_transacao_ativa_sim_nao," +
+                        " t1.qt_livro_transacao," +
+                        " t1.ds_observacao_livro_transacao," +
+                        " t1.dt_cadastro_transacao," +
+                        " t1.dt_transacao_finalizada" +
+                        " from comunidade_do_livro.transacao t1" +
+                        " inner join comunidade_do_livro.livro l1 on ( l1.cd_livro = t1.cd_livro_transacao )" +
+                        " where t1.cd_doador_usuario_transacao = " + cdUsuario + " and" +
+                        " t1.cd_usuario_cadastrante = " + cdUsuario +
+                        " order by";
+                        
+                        switch(filtro){
+                            case 1:
+                                query +=
+                                " l1.nm_titulo_livro asc "+ (limit != null ? ("limit "+limit+" offset "+threshold+";") : ";");
+                                break;
+                            case 2:
+                                query +=
+                                " l1.nm_titulo_livro desc "+ (limit != null ? ("limit "+limit+" offset "+threshold+";") : ";");    
+                                break;
+                            case 3:
+                                query +=
+                                " t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit "+limit+" offset "+threshold+";") : ";");
+                                break;
+                            case 4:
+                                query +=
+                                " t1.dt_cadastro_transacao asc "+ (limit != null ? ("limit "+limit+" offset "+threshold+";") : ";");
+                                break;
+                            case 5:
+                                query +=
+                                " t1.ic_transacao_ativa_sim_nao desc, t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit "+limit+" offset "+threshold+";") : ";");
+                                break;
+                            case 6:
+                                query +=
+                                " t1.ic_transacao_autorizada_sim_nao desc, t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit "+limit+" offset "+threshold+";") : ";");
+                                break;
+                            default:
+                                query +=
+                                " t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit "+limit+" offset "+threshold+";") : ";");
+                                break;
+                        }
         
         Connection conn = database.Connection.getConnection();
         ResultSet rs;
         Statement stmt = null;
-        Integer amount = null;
+        Transacao t = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(builder.toString());
+            rs = stmt.executeQuery(query);
 
             while(rs.next()){
-                amount = rs.getInt(1);
+                t = new Transacao();
+                
+                t.setCdTransacao(rs.getInt("cd_transacao"));
+                
+                //Pega o livro da transacao
+                LivroDAO livroDao = new LivroDAO();
+                t.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
+                
+                t.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
+                t.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
+                t.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
+                t.setQtLivroTransacao(rs.getInt("qt_livro_transacao"));
+                t.setDescricao(rs.getString("ds_observacao_livro_transacao"));
+                t.setDataCadastro(rs.getDate("dt_cadastro_transacao"));
+                t.setDataFinalizacao(rs.getDate("dt_transacao_finalizada"));
+                
+                transacoes.add(t);
             }
             
-            return amount;
+            return transacoes;
         }  catch (SQLException ex) {
             ex.printStackTrace();
             return null;
@@ -108,6 +198,205 @@ public class TransacaoDAO {
         }
     }
     
+    public List<Transacao> getTransacoesByLivro(String textoLivro, Integer userId, Integer limit) throws URISyntaxException, SQLException {
+        List<Transacao> transacoes = new ArrayList<Transacao>();
+        
+        String query = "select t1.cd_transacao," +
+                        " t1.cd_livro_transacao," +
+                        " t1.ic_transacao_finalizada_sim_nao," +
+                        " t1.ic_transacao_autorizada_sim_nao," +
+                        " t1.ic_transacao_ativa_sim_nao," +
+                        " t1.qt_livro_transacao," +
+                        " t1.ds_observacao_livro_transacao," +
+                        " t1.dt_cadastro_transacao," +
+                        " t1.dt_transacao_finalizada" +
+                        " from comunidade_do_livro.transacao t1" +
+                        " inner join comunidade_do_livro.livro l1 on ( t1.cd_livro_transacao = l1.cd_livro )" +
+                        " where t1.cd_doador_usuario_transacao = "+userId+" and" +
+                        " t1.cd_usuario_cadastrante = "+userId+" and" +
+                        " (" +
+                            " lower(l1.nm_titulo_livro) like '%"+textoLivro+"%' or" +
+                            " lower(l1.nm_autor_livro) like '%"+textoLivro+"%' or" +
+                            " l1.cd_isbn_livro::varchar like '%"+textoLivro+"%'" +
+                        " )" +
+                        " order by t1.dt_cadastro_transacao desc "+ (limit != null ? ("limit " + limit + ";") : ";");
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        Transacao t = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+
+            while(rs.next()){
+                t = new Transacao();
+                
+                t.setCdTransacao(rs.getInt("cd_transacao"));
+                
+                //Pega o livro da transacao
+                LivroDAO livroDao = new LivroDAO();
+                t.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
+                
+                t.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
+                t.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
+                t.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
+                t.setQtLivroTransacao(rs.getInt("qt_livro_transacao"));
+                t.setDescricao(rs.getString("ds_observacao_livro_transacao"));
+                t.setDataCadastro(rs.getDate("dt_cadastro_transacao"));
+                t.setDataFinalizacao(rs.getDate("dt_transacao_finalizada"));
+                
+                transacoes.add(t);
+            }
+            
+            return transacoes;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    public List<Transacao> getTransacaoById(Integer cdTransacao) throws URISyntaxException, SQLException {
+        List<Transacao> transacoes = new ArrayList<Transacao>();
+        Transacao transacao = null;
+        
+        String query = "select t1.cd_transacao," +
+                        "t1.cd_livro_transacao," +
+                        "t1.ic_transacao_finalizada_sim_nao," +
+                        "t1.ic_transacao_autorizada_sim_nao," +
+                        "t1.ic_transacao_ativa_sim_nao," +
+                        "t1.qt_livro_transacao," +
+                        "t1.ds_observacao_livro_transacao," +
+                        "t1.dt_cadastro_transacao," +
+                        "t1.dt_transacao_finalizada" +
+                        " from comunidade_do_livro.transacao t1" +
+                        " where t1.cd_transacao = " + cdTransacao + ";";
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+
+            while(rs.next()){
+                transacao = new Transacao();
+                transacao.setCdTransacao(rs.getInt("cd_transacao"));
+                
+                //Pega o livro da transacao
+                LivroDAO livroDao = new LivroDAO();
+                transacao.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
+                
+                transacao.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
+                transacao.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
+                transacao.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
+                transacao.setQtLivroTransacao(rs.getInt("qt_livro_transacao"));
+                transacao.setDescricao(rs.getString("ds_observacao_livro_transacao"));
+                transacao.setDataCadastro(rs.getDate("dt_cadastro_transacao"));
+                transacao.setDataFinalizacao(rs.getDate("dt_transacao_finalizada"));
+            }
+            
+            transacoes.add(transacao);
+            return transacoes;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    //Retorna todos os livros em doacao sem discrimar
+    public ArrayList<ArrayList<GenericTransacao>> getAllTransacoesAtivasIDsPicsGenre() throws URISyntaxException, SQLException {
+        
+        String query = "select t.cd_transacao," +
+                        " l.im_capa_livro," +
+                        " l.nm_genero_livro," +
+                        " l.nm_titulo_livro" +
+                        " from comunidade_do_livro.transacao t" +
+                        " inner join comunidade_do_livro.livro l on (t.cd_livro_transacao = l.cd_livro)" +
+                        " where t.ic_transacao_ativa_sim_nao = true and" +
+                        " t.cd_donatario_usuario_transacao is null" +
+                        " order by 3;";
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            
+            ArrayList<GenericTransacao> books = new ArrayList<GenericTransacao>();
+            GenericTransacao book;
+            
+            while(rs.next()){
+                book = new GenericTransacao();
+                book.setGenre(rs.getString(3).equals("") ? "Sem Gênero" : rs.getString(3));
+                book.setCdTransacao(rs.getInt(1));
+                book.setImgLink(rs.getString(2).equals("") ? "https://docs.google.com/uc?id=0B03XPxH14xDTZS05WTNCNTJPZW8&export=download" : rs.getString(2));
+                book.setTitulo(rs.getString(4));
+                
+                books.add(book);
+            }
+            
+            ArrayList<String> uniqueGenreList = new ArrayList<String>();
+            for(GenericTransacao b : books){
+                if(!uniqueGenreList.contains(b.getGenre())){
+                    uniqueGenreList.add(b.getGenre());
+                }
+            }
+            
+            //Lista de livros por genero retonada
+            ArrayList<ArrayList<GenericTransacao>> lista = new ArrayList<ArrayList<GenericTransacao>>();
+            ArrayList<GenericTransacao> perGenreLista;
+            for(String g : uniqueGenreList){
+                //Lista referente a um unico genero
+                perGenreLista = new ArrayList<GenericTransacao>();
+                for(GenericTransacao b : books){
+                    if(g.equals(b.getGenre())){
+                        perGenreLista.add(b);
+                    }
+                }
+                
+                lista.add(perGenreLista);
+            }
+            
+            Collections.sort(lista, new Comparator<ArrayList<GenericTransacao>>(){
+                @Override
+                public int compare(ArrayList<GenericTransacao> o1, ArrayList<GenericTransacao> o2) {
+                    return o2.size() - o1.size();
+                }
+                
+            });
+            //TESTE
+            /*
+            System.out.println("----------------------------------------");
+            for(ArrayList<GenericTransacao> l : lista){
+                for(GenericTransacao t : l){
+                    System.out.println("Gen: " + t.getGenre());
+                    System.out.println("Cod: " + t.getCdTransacao());
+                    System.out.println("Img: " + t.getImgLink());
+                }
+                System.out.println("----------------------------------------");
+            }
+            */
+            
+            return lista;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    //Cadastros
     public Integer registerTransacao(Transacao t) throws SQLException, URISyntaxException{
         
         StringBuilder insertTransacao = new StringBuilder(); 
@@ -145,14 +434,17 @@ public class TransacaoDAO {
         insertTransacao.append(t.getDataCadastro());
         insertTransacao.append(",");
         insertTransacao.append(t.getDataFinalizacao());
-        insertTransacao.append(");");
+        insertTransacao.append(") RETURNING cd_transacao;");
         
         Connection conn = database.Connection.getConnection();
-        int rs;
+        Integer rs = null;
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeUpdate(insertTransacao.toString());
+            ResultSet resSet = stmt.executeQuery(insertTransacao.toString());
+            while(resSet.next()){
+                rs = resSet.getInt(1);
+            }
             return rs;
         }  catch (SQLException ex) {
             ex.printStackTrace();
@@ -163,7 +455,8 @@ public class TransacaoDAO {
         }
     }
     
-    public int alterarDoacaoLivroTransacao(int transacaoId, boolean doarSimNao, int qtdDoada) throws SQLException, URISyntaxException{
+    //Alteracoes
+    public Integer alterarDoacaoLivroTransacao(int transacaoId, boolean doarSimNao, int qtdDoada) throws SQLException, URISyntaxException{
         StringBuilder updateTransacao = new StringBuilder(); 
         updateTransacao.append("UPDATE comunidade_do_livro.transacao "); 
         updateTransacao.append("SET ic_transacao_ativa_sim_nao = ");
@@ -172,14 +465,17 @@ public class TransacaoDAO {
         updateTransacao.append(qtdDoada);
         updateTransacao.append(" WHERE cd_transacao = ");
         updateTransacao.append(transacaoId);
-        updateTransacao.append(";");
+        updateTransacao.append(" RETURNING cd_transacao;");
         
         Connection conn = database.Connection.getConnection();
-        int rs;
+        Integer rs = null;
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeUpdate(updateTransacao.toString());
+            ResultSet resSet = stmt.executeQuery(updateTransacao.toString());
+            while(resSet.next()){
+                rs = resSet.getInt(1);
+            }
             return rs;
         }  catch (SQLException ex) {
             ex.printStackTrace();
@@ -190,26 +486,75 @@ public class TransacaoDAO {
         }
     }
     
-    public int removerDoacaoLivroTransacao(int transacaoId) throws URISyntaxException, SQLException {
+    //Delecoes
+    public Integer removerDoacaoLivroTransacao(int transacaoId) throws URISyntaxException, SQLException {
         StringBuilder deleteTransacao = new StringBuilder(); 
         deleteTransacao.append("DELETE FROM comunidade_do_livro.transacao ");
         deleteTransacao.append("where cd_transacao = ");
         deleteTransacao.append(transacaoId);
-        deleteTransacao.append(";");
+        deleteTransacao.append("RETURNING cd_transacao;");
         
         Connection conn = database.Connection.getConnection();
-        int rs;
+        Integer rs = null;
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeUpdate(deleteTransacao.toString());
+            ResultSet resSet = stmt.executeQuery(deleteTransacao.toString());
+            while(resSet.next()){
+                rs = resSet.getInt(1);
+            }
             return rs;
         }  catch (SQLException ex) {
             ex.printStackTrace();
-            return 0;
+            return null;
         }  finally {
             stmt.close();
             conn.close();
         }
     }
+    
+    //Classe para facilitar a consulta inicial de livros para doacao
+    public class GenericTransacao {
+        private String genre;
+        private Integer cdTransacao;
+        private String imgLink;
+        private String titulo;
+
+        public GenericTransacao() {
+        }
+
+        public String getGenre() {
+            return genre;
+        }
+
+        public void setGenre(String genre) {
+            this.genre = genre;
+        }
+
+        public Integer getCdTransacao() {
+            return cdTransacao;
+        }
+
+        public void setCdTransacao(Integer cdTrsanacao) {
+            this.cdTransacao = cdTrsanacao;
+        }
+
+        public String getImgLink() {
+            return imgLink;
+        }
+
+        public void setImgLink(String imgLink) {
+            this.imgLink = imgLink;
+        }
+
+        public String getTitulo() {
+            return titulo;
+        }
+
+        public void setTitulo(String titulo) {
+            this.titulo = titulo;
+        }
+        
+    }
+    
 } 

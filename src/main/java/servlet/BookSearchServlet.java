@@ -86,7 +86,7 @@ public class BookSearchServlet extends HttpServlet{
         
         String livroJson, livrosJson = null;
         if(singleResult != null){
-            //Transforma o usuario em um objeto JSON
+            //Transforma o livro em um objeto JSON
             livroJson = ObjectJson.getObjectJson(singleResult);
             out.print(livroJson);
         } else if(multipleResults != null){

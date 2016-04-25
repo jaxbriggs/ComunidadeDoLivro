@@ -164,8 +164,10 @@ $(document).ready(function() {
                                     $("#alertCadastroSucesso").hide();
                                 });
                                 
-                                //Pega todas as transacoes do usuario e monta a lista dinamicamente
-                                getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());
+                                //Insere o livro na lista 
+                                $("#filtroId").val(3);
+                                getAllTransacoesByUserWithLimit($("#userId").val(), qtdPerPage, 1, $("#filtroId").val());
+                                //getTransacaoById(data.cdTransacao, 2); //ADD
                             } else {
                                 //Erro ao cadastrar livro
                                 $("#alertCadastroFalha").show();
@@ -196,8 +198,10 @@ $(document).ready(function() {
                     });
                     $('#modal_novo_livro').modal('toggle');
                     
-                    //Pega todas as transacoes do usuario e monta a lista dinamicamente
-                    getAllTransacoesByUserWithLimit($("#userId").val(), $("#comboQtdPaginacao").val());
+                    //Insere o livro na lista
+                    $("#filtroId").val(3);
+                    getAllTransacoesByUserWithLimit($("#userId").val(), qtdPerPage, 1, $("#filtroId").val()); 
+                    //getTransacaoById(data.cdTransacao, 2); //ADD
                 } else {
                     $("#alertCadastroFalha").show();
                     $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){

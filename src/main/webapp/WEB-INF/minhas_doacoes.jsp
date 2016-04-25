@@ -6,7 +6,7 @@
     if(session.getAttribute("user") != null){
 %>
 <div id="conteudo">
-    MINHAS DOAÇÕES
+    MINHAS DOAÃ‡Ã•ES
 </div>
 <%} else {
         response.sendRedirect("/index.jsp");
