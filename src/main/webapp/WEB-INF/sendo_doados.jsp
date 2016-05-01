@@ -187,7 +187,7 @@
                                 <h3 class="panel-title"><%= gl.get(0).getGenre() %></h3>
                             </div>  
                             <div class="panel-body">
-                                <div class="livrosSlider" style="text-align: center; margin: 0 auto; width: 70%; height: 70%;">
+                                <div class="livrosSlider" style="text-align: center; margin: 0 auto; height: 70%;">
                                     <%for(TransacaoDAO.GenericTransacao t : gl){%>
                                         <div>
                                             <a class="livroListaItem" id='<%= t.getCdTransacao() %>' data-toggle="tooltip" data-placement="top" title="<%= t.getTitulo() %>">
