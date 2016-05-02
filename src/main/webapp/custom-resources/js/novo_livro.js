@@ -391,7 +391,7 @@ function setLivroDataFromServer(data, callerElement){
         exception.push(paginas);
     }
     
-    paginas.val(data.qtdPaginas);
+    paginas.val(data.qtdPaginas === 0 ? "" : data.qtdPaginas);
     
     if(callerElement === titulo && $.type(data.capaLink) === "undefined"){
         exception.push(capa);

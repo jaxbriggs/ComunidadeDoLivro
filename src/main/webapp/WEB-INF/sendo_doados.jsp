@@ -16,7 +16,7 @@
   try{
       
     TransacaoDAO tDao = new TransacaoDAO();
-    booksPerGenre = tDao.getAllTransacoesAtivasIDsPicsGenre();
+    booksPerGenre = tDao.getAllTransacoesAtivasIDsPicsGenre(user != null ? user.getId() : null);
       
   } catch(URISyntaxException ex){
     booksPerGenre = null;
@@ -67,49 +67,53 @@
     }
 </style>
     <!-- MODAL DOACAO INFO -->
-    <div class="modal fade" id="doacaoInfoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Informações da doação</h4>
-          </div>
-          <div class="modal-body">
-              <div class="container-fluid">
-                  <div class="row">
-                      <div class="col-xs-3">
-                        <a class="thumbnail">
-                            <img src="../custom-resources/img/teste/content (1).jpg" alt="...">
-                        </a>
+    <div id="modalDoacaoContainer">
+        <!--
+        <div class="modal fade" id="doacaoInfoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Informações da doação</h4>
+              </div>
+              <div class="modal-body">
+                  <div class="container-fluid">
+                      <div class="row">
+                          <div class="col-xs-3">
+                            <a class="thumbnail">
+                                <img src="../custom-resources/img/teste/content (1).jpg" alt="...">
+                            </a>
+                          </div>
+                          <div class="col-xs-9">
+                            <p style="font-size: medium; text-align: center;"><b>Titulo BLA BLA (456465465465)</b></p>
+                            <p><b style="font-size: small;">Por</b>: Jack Bauer <b style="font-size: small;">Nº de Páginas:</b> 227 <b style="font-size: small;">Idioma:</b> en</p>
+                            <p>Este livro tem como objetivo, mostrar como a morte se instalou no mundo, a partir de uma situação criada pelo homem, que gerou graves conseqüências para toda humanidade, bem como, para universo físico. Procuro também, mostrar as Este...</p>
+                            <p>
+                              <span class="label label-danger">Fiction</span>
+                              <span class="label label-warning">Quantidade: 1</span>
+                            </p>
+                          </div>
                       </div>
-                      <div class="col-xs-9">
-                        <p style="font-size: medium; text-align: center;"><b>Titulo BLA BLA (456465465465)</b></p>
-                        <p><b style="font-size: small;">Por</b>: Jack Bauer <b style="font-size: small;">Nº de Páginas:</b> 227 <b style="font-size: small;">Idioma:</b> en</p>
-                        <p>Este livro tem como objetivo, mostrar como a morte se instalou no mundo, a partir de uma situação criada pelo homem, que gerou graves conseqüências para toda humanidade, bem como, para universo físico. Procuro também, mostrar as Este...</p>
-                        <p>
-                          <span class="label label-danger">Fiction</span>
-                          <span class="label label-warning">Quantidade: 1</span>
-                        </p>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <div class="col-xs-12">
-                          <div class="row">
-                              <div class="col-xs-12">
-                                  <p style="float: left;"><b style="font-size: medium;">Doador: </b><a>Carlos Henrique</a></p>
-                                  <p style="float: right;"><b style="font-size: medium;">Nº de Candidatos: </b>30</p>
+                      <div class="row">
+                          <div class="col-xs-12">
+                              <div class="row">
+                                  <div class="col-xs-12">
+                                      <p style="float: left;"><b style="font-size: medium;">Doador: </b><a>Carlos Henrique</a></p>
+                                      <p style="float: right;"><b style="font-size: medium;">Nº de Candidatos: </b>30</p>
+                                  </div>
                               </div>
                           </div>
                       </div>
                   </div>
               </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-            <button type="button" class="btn btn-primary">Candidatar-se</button>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary">Candidatar-se</button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+        -->
     </div>
     <!-- FIM MODAL DOACAO INFO -->
     
@@ -148,6 +152,7 @@
                                     <div class="form-group">
                                       <!-- campo hidden que contem o filtro da pesquisa -->
                                       <input type="hidden" id="hiddenFiltro" value="1">
+                                      <input type="hidden" id="userId" value="<%= user != null ? user.getId() : "" %>">
                                       <input type="text" id="txtPesquisaLivrosEmDoacao" class="form-control" placeholder="Pesquisa">
                                     </div>
                                     <button type="button" id="btnPesquisarLivrosEmDoacao" class="btn btn-default">Pesquisar</button>

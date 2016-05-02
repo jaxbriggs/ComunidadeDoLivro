@@ -90,6 +90,29 @@ public class TransacaoDAO {
                 LivroDAO livroDao = new LivroDAO();
                 t.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
                 
+                //Pega a lista de usuarios que se cadidataram a este livro
+                StringBuilder candidatosIdsQuery = new StringBuilder();
+                candidatosIdsQuery.append("select t.cd_usuario_cadastrante");
+                candidatosIdsQuery.append(" from comunidade_do_livro.transacao t");
+                candidatosIdsQuery.append(" where t.cd_livro_transacao = ");
+                candidatosIdsQuery.append(rs.getInt("cd_livro_transacao"));
+                candidatosIdsQuery.append(" and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante <> t.cd_doador_usuario_transacao and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante = t.cd_donatario_usuario_transacao;");
+                
+                ResultSet candidatosRs = null;
+                Statement candidatosStmt = null;
+                candidatosStmt = conn.createStatement();
+                candidatosRs = candidatosStmt.executeQuery(candidatosIdsQuery.toString());
+                List<Integer> candidatos = new ArrayList<Integer>();
+                while(candidatosRs.next()){
+                    candidatos.add(candidatosRs.getInt(1));
+                }
+                
+                //Atribui os candidatos
+                t.setCandidatosIds(candidatos);
+                
+                
                 t.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
                 t.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
                 t.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
@@ -177,6 +200,28 @@ public class TransacaoDAO {
                 LivroDAO livroDao = new LivroDAO();
                 t.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
                 
+                //Pega a lista de usuarios que se cadidataram a este livro
+                StringBuilder candidatosIdsQuery = new StringBuilder();
+                candidatosIdsQuery.append("select t.cd_usuario_cadastrante");
+                candidatosIdsQuery.append(" from comunidade_do_livro.transacao t");
+                candidatosIdsQuery.append(" where t.cd_livro_transacao = ");
+                candidatosIdsQuery.append(rs.getInt("cd_livro_transacao"));
+                candidatosIdsQuery.append(" and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante <> t.cd_doador_usuario_transacao and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante = t.cd_donatario_usuario_transacao;");
+                
+                ResultSet candidatosRs = null;
+                Statement candidatosStmt = null;
+                candidatosStmt = conn.createStatement();
+                candidatosRs = candidatosStmt.executeQuery(candidatosIdsQuery.toString());
+                List<Integer> candidatos = new ArrayList<Integer>();
+                while(candidatosRs.next()){
+                    candidatos.add(candidatosRs.getInt(1));
+                }
+                
+                //Atribui os candidatos
+                t.setCandidatosIds(candidatos);
+                
                 t.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
                 t.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
                 t.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
@@ -238,6 +283,28 @@ public class TransacaoDAO {
                 LivroDAO livroDao = new LivroDAO();
                 t.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
                 
+                //Pega a lista de usuarios que se cadidataram a este livro
+                StringBuilder candidatosIdsQuery = new StringBuilder();
+                candidatosIdsQuery.append("select t.cd_usuario_cadastrante");
+                candidatosIdsQuery.append(" from comunidade_do_livro.transacao t");
+                candidatosIdsQuery.append(" where t.cd_livro_transacao = ");
+                candidatosIdsQuery.append(rs.getInt("cd_livro_transacao"));
+                candidatosIdsQuery.append(" and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante <> t.cd_doador_usuario_transacao and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante = t.cd_donatario_usuario_transacao;");
+                
+                ResultSet candidatosRs = null;
+                Statement candidatosStmt = null;
+                candidatosStmt = conn.createStatement();
+                candidatosRs = candidatosStmt.executeQuery(candidatosIdsQuery.toString());
+                List<Integer> candidatos = new ArrayList<Integer>();
+                while(candidatosRs.next()){
+                    candidatos.add(candidatosRs.getInt(1));
+                }
+                
+                //Atribui os candidatos
+                t.setCandidatosIds(candidatos);
+                
                 t.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
                 t.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
                 t.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
@@ -271,7 +338,9 @@ public class TransacaoDAO {
                         "t1.qt_livro_transacao," +
                         "t1.ds_observacao_livro_transacao," +
                         "t1.dt_cadastro_transacao," +
-                        "t1.dt_transacao_finalizada" +
+                        "t1.dt_transacao_finalizada," +
+                        "t1.cd_doador_usuario_transacao," +
+                        "t1.cd_usuario_cadastrante" +
                         " from comunidade_do_livro.transacao t1" +
                         " where t1.cd_transacao = " + cdTransacao + ";";
         
@@ -290,6 +359,28 @@ public class TransacaoDAO {
                 LivroDAO livroDao = new LivroDAO();
                 transacao.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
                 
+                //Pega a lista de usuarios que se cadidataram a este livro
+                StringBuilder candidatosIdsQuery = new StringBuilder();
+                candidatosIdsQuery.append("select t.cd_usuario_cadastrante");
+                candidatosIdsQuery.append(" from comunidade_do_livro.transacao t");
+                candidatosIdsQuery.append(" where t.cd_livro_transacao = ");
+                candidatosIdsQuery.append(rs.getInt("cd_livro_transacao"));
+                candidatosIdsQuery.append(" and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante <> t.cd_doador_usuario_transacao and");
+                candidatosIdsQuery.append(" t.cd_usuario_cadastrante = t.cd_donatario_usuario_transacao;");
+                
+                ResultSet candidatosRs = null;
+                Statement candidatosStmt = null;
+                candidatosStmt = conn.createStatement();
+                candidatosRs = candidatosStmt.executeQuery(candidatosIdsQuery.toString());
+                List<Integer> candidatos = new ArrayList<Integer>();
+                while(candidatosRs.next()){
+                    candidatos.add(candidatosRs.getInt(1));
+                }
+                
+                //Atribui os candidatos
+                transacao.setCandidatosIds(candidatos);
+                
                 transacao.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
                 transacao.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
                 transacao.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
@@ -297,6 +388,13 @@ public class TransacaoDAO {
                 transacao.setDescricao(rs.getString("ds_observacao_livro_transacao"));
                 transacao.setDataCadastro(rs.getDate("dt_cadastro_transacao"));
                 transacao.setDataFinalizacao(rs.getDate("dt_transacao_finalizada"));
+                
+                //Pega o doador
+                UserDAO userDao = new UserDAO();
+                transacao.setDoador(userDao.getUserById(rs.getInt("cd_doador_usuario_transacao")));
+                
+                //Pega o cadastrante
+                transacao.setCadastrante(userDao.getUserById(rs.getInt("cd_usuario_cadastrante")));
             }
             
             transacoes.add(transacao);
@@ -311,7 +409,7 @@ public class TransacaoDAO {
     }
     
     //Retorna todos os livros em doacao sem discrimar
-    public ArrayList<ArrayList<GenericTransacao>> getAllTransacoesAtivasIDsPicsGenre() throws URISyntaxException, SQLException {
+    public ArrayList<ArrayList<GenericTransacao>> getAllTransacoesAtivasIDsPicsGenre(Integer userId) throws URISyntaxException, SQLException {
         
         String query = "select t.cd_transacao," +
                         " l.im_capa_livro," +
@@ -320,7 +418,14 @@ public class TransacaoDAO {
                         " from comunidade_do_livro.transacao t" +
                         " inner join comunidade_do_livro.livro l on (t.cd_livro_transacao = l.cd_livro)" +
                         " where t.ic_transacao_ativa_sim_nao = true and" +
-                        " t.cd_donatario_usuario_transacao is null" +
+                        " t.cd_donatario_usuario_transacao is null";
+        
+                        if(userId != null){
+                            query +=
+                            " and t.cd_doador_usuario_transacao != " + userId;
+                        }
+                        
+                        query +=
                         " order by 3;";
         
         Connection conn = database.Connection.getConnection();
@@ -387,6 +492,102 @@ public class TransacaoDAO {
             */
             
             return lista;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    public List<Transacao> getUserTransacoes(Integer userId) throws URISyntaxException, SQLException {
+        List<Transacao> transacoes = new ArrayList<Transacao>();
+        Transacao transacao = null;
+        
+        StringBuilder query = new StringBuilder();
+        query.append("select t1.cd_transacao,");
+        query.append("t1.cd_livro_transacao,");
+        query.append("t1.ic_transacao_finalizada_sim_nao,");
+        query.append("t1.ic_transacao_autorizada_sim_nao,");
+        query.append("t1.ic_transacao_ativa_sim_nao,");
+        query.append("t1.qt_livro_transacao,");
+        query.append("t1.ds_observacao_livro_transacao,");
+        query.append("t1.dt_cadastro_transacao,");
+        query.append("t1.dt_transacao_finalizada,");
+        query.append("t1.cd_doador_usuario_transacao,");
+        query.append("t1.cd_usuario_cadastrante");
+        query.append(" from comunidade_do_livro.transacao t1");
+        query.append(" where t1.cd_doador_usuario_transacao <> ");
+        query.append(userId);
+        query.append(" and t1.cd_usuario_cadastrante = ");
+        query.append(userId);
+        query.append(" and t1.cd_donatario_usuario_transacao = ");
+        query.append(userId);
+        query.append(" and t1.cd_doador_usuario_transacao is not null;");
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query.toString());
+
+            while(rs.next()){
+                transacao = new Transacao();
+                transacao.setCdTransacao(rs.getInt("cd_transacao"));
+                
+                //Pega o livro da transacao
+                LivroDAO livroDao = new LivroDAO();
+                transacao.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
+                
+                
+                //Pega os donatarios das transacoes
+                StringBuilder transacaoOrigemQuery = new StringBuilder();
+                transacaoOrigemQuery.append("select t.cd_donatario_usuario_transacao");
+                transacaoOrigemQuery.append(" from comunidade_do_livro.transacao t");
+                transacaoOrigemQuery.append(" where t.cd_livro_transacao = ");
+                transacaoOrigemQuery.append(rs.getInt("cd_livro_transacao"));
+                transacaoOrigemQuery.append(" and t.cd_doador_usuario_transacao = ");
+                transacaoOrigemQuery.append(rs.getInt("cd_doador_usuario_transacao"));
+                transacaoOrigemQuery.append(" and t.cd_usuario_cadastrante <> ");
+                transacaoOrigemQuery.append(rs.getInt("cd_usuario_cadastrante"));
+                transacaoOrigemQuery.append(" and t.ic_transacao_finalizada_sim_nao = ");
+                transacaoOrigemQuery.append(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
+                transacaoOrigemQuery.append(" and t.ic_transacao_autorizada_sim_nao = ");
+                transacaoOrigemQuery.append(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
+                transacaoOrigemQuery.append(" and t.ic_transacao_ativa_sim_nao = ");
+                transacaoOrigemQuery.append(rs.getBoolean("ic_transacao_ativa_sim_nao"));
+                transacaoOrigemQuery.append(";");
+                
+                ResultSet origemRs = null;
+                Statement origemStmt = null;
+                origemStmt = conn.createStatement();
+                origemRs = origemStmt.executeQuery(transacaoOrigemQuery.toString());
+                UserDAO uDao = new UserDAO();
+                while(origemRs.next()){
+                    transacao.setDonatario(uDao.getUserById(origemRs.getInt(1)));
+                }
+                
+                transacao.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
+                transacao.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
+                transacao.setIsAtivada(rs.getBoolean("ic_transacao_ativa_sim_nao"));
+                transacao.setQtLivroTransacao(rs.getInt("qt_livro_transacao"));
+                transacao.setDescricao(rs.getString("ds_observacao_livro_transacao"));
+                transacao.setDataCadastro(rs.getDate("dt_cadastro_transacao"));
+                transacao.setDataFinalizacao(rs.getDate("dt_transacao_finalizada"));
+                
+                //Pega o doador
+                UserDAO userDao = new UserDAO();
+                transacao.setDoador(userDao.getUserById(rs.getInt("cd_doador_usuario_transacao")));
+                
+                //Pega o cadastrante
+                transacao.setCadastrante(userDao.getUserById(rs.getInt("cd_usuario_cadastrante")));
+                
+                transacoes.add(transacao);
+            }
+            
+            return transacoes;
         }  catch (SQLException ex) {
             ex.printStackTrace();
             return null;
@@ -507,6 +708,64 @@ public class TransacaoDAO {
         }  catch (SQLException ex) {
             ex.printStackTrace();
             return null;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    /**
+     * Cadastra uma transacao apontando o interesse de um usuario em um livro disponibilizado previamente em uma transacao
+     * 
+     * @param userId Usuario candidato
+     * @param qtdLivrosCandidatados Quantidade de livros desejada pelo candidadto
+     * @param transacaoId Codigo da transacao na qual o quandidadate esta interessado
+     * @return
+     * @throws SQLException
+     * @throws URISyntaxException 
+     */
+    public int candidatarTransacaoOp0(Integer userId, Integer qtdLivrosCandidatados, Integer transacaoId) throws SQLException, URISyntaxException{
+        StringBuilder query = new StringBuilder();
+        query.append("insert into comunidade_do_livro.transacao (");
+        query.append("cd_doador_usuario_transacao,");
+        query.append("cd_donatario_usuario_transacao,");
+        query.append("cd_usuario_cadastrante,");
+        query.append("cd_livro_transacao,");
+        query.append("ic_transacao_finalizada_sim_nao,");
+        query.append("ic_transacao_autorizada_sim_nao,");
+        query.append("ic_transacao_ativa_sim_nao,");
+        query.append("qt_livro_transacao,");
+        query.append("ds_observacao_livro_transacao,");
+        query.append("dt_cadastro_transacao,");
+        query.append("dt_transacao_finalizada");
+        query.append(")");
+        query.append("select cd_doador_usuario_transacao,");
+        query.append(userId);
+        query.append(",");
+        query.append(userId);
+        query.append(",");
+        query.append("cd_livro_transacao,");
+        query.append("ic_transacao_finalizada_sim_nao,");
+        query.append("ic_transacao_autorizada_sim_nao,");
+        query.append("ic_transacao_ativa_sim_nao,");
+        query.append(qtdLivrosCandidatados);
+        query.append(",");
+        query.append("ds_observacao_livro_transacao,");
+        query.append("dt_cadastro_transacao,");
+        query.append("dt_transacao_finalizada");
+        query.append(" from comunidade_do_livro.transacao where cd_transacao = ");
+        query.append(transacaoId);
+        query.append(";");
+
+        Connection conn = database.Connection.getConnection();
+        Integer rs = null;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            return stmt.executeUpdate(query.toString());
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return 0;
         }  finally {
             stmt.close();
             conn.close();
