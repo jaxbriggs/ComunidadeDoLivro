@@ -8,6 +8,7 @@ package model;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -24,6 +25,7 @@ public class Transacao implements Serializable {
     private Boolean isAtivada;
     private Integer qtLivroTransacao;
     private Livro livro;
+    private List<Integer> candidatosIds;
     private String descricao;
     private String dataCadastro;
     private String dataFinalizacao;
@@ -147,6 +149,12 @@ public class Transacao implements Serializable {
         this.dataFinalizacao = 
                 dataFinalizacao != null ? "'" + ft.format(dataFinalizacao) + "'" : null;
     }
-    
-    
+
+    public List<Integer> getCandidatosIds() {
+        return candidatosIds;
+    }
+
+    public void setCandidatosIds(List<Integer> candidatosIds) {
+        this.candidatosIds = candidatosIds;
+    }
 }

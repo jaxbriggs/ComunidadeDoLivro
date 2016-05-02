@@ -218,6 +218,10 @@
                             <li id="menu_livros_em_pedidos" onClick="loadPageByPickedMenu('#menu_livros_em_pedidos', '/sendo_pedidos');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-child fa-stack-1x "></i></span>Sendo Pedidos</a></li>
                         </ul>
                 </li>
+                <li id="transacoes" onClick="loadPageByPickedMenu('#meus_recebimentos', '/meus_recebimentos');">
+                    <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-exchange fa-stack-1x "></i></span> Transações</a>
+                </li>
+                <!--
                 <li>
                     <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-exchange fa-stack-1x "></i></span> Transações</a>
                        <ul class="nav-pills nav-stacked" style="list-style-type:none;">
@@ -225,6 +229,7 @@
                             <li id="meus_recebimentos" onClick="loadPageByPickedMenu('#meus_recebimentos', '/meus_recebimentos');"><a><span class="fa-stack fa-lg pull-left"><i class="fa fa-hand-grab-o fa-stack-1x "></i></span>Meus Recebimentos</a></li>
                         </ul>
                 </li>
+                -->
                 <li>
                     <a><span class="fa-stack fa-lg pull-left"><i class="fa fa-child fa-stack-1x "></i></span> Pedidos</a>
                        <ul class="nav-pills nav-stacked" style="list-style-type:none;">

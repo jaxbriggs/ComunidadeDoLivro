@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import model.Endereco;
 import model.User;
 
@@ -229,6 +230,81 @@ public class UserDAO extends GeneralDAO{
             ex.printStackTrace();
         } finally {
             pstmt.close();
+            conn.close();
+        }
+        
+        return null;
+    }
+    
+    public User getUserById(Integer id) throws SQLException {
+        String query = "select  u.cd_usuario, \n" +
+                        "       u.nm_usuario,\n" +
+                        "       u.nm_login_usuario,\n" +
+                        "       u.nm_email_usuario,\n" +
+                        "       u.cd_senha_usuario,\n" +
+                        "       u.ic_ativo_usuario_sim_nao,\n" +
+                        "       u.ic_admin_usuario_sim_nao,\n" +
+                        "       u.cd_cpf_usuario,\n" +
+                        "       u.cd_cnpj_usuario, \n" +
+                        "       u.cd_telefone_usuario,\n" +
+                        "       u.cd_celular_usuario,\n" +
+                        "       e.cd_codigo_postal_endereco,\n" +
+                        "       e.nm_rua_endereco,\n" +
+                        "       e.cd_numero_endereco,\n" +
+                        "       e.nm_bairro_endereco,\n" +
+                        "       e.nm_cidade_endereco,\n" +
+                        "       e.sg_unidade_federativa_endereco\n" +
+                        "from comunidade_do_livro.usuario u\n" +
+                        "inner join comunidade_do_livro.endereco e on (u.cd_endereco_usuario = e.cd_endereco)\n" +
+                        "where u.cd_usuario = " + id + ";";
+        
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            
+            //Prepara o statement para a consulta
+            conn = database.Connection.getConnection();
+            stmt = conn.createStatement();
+            
+            //Faz o select
+            ResultSet rs = stmt.executeQuery(query);
+            User u = null;
+            Endereco endereco = null;
+            while (rs.next()) {
+                //Pega o endereco
+                endereco = new Endereco();
+                endereco.setBairro(rs.getString("nm_bairro_endereco"));
+                endereco.setCep(rs.getString("cd_codigo_postal_endereco"));
+                endereco.setCidade(rs.getString("nm_cidade_endereco"));
+                endereco.setEstado(rs.getString("sg_unidade_federativa_endereco"));
+                endereco.setNumero(Integer.parseInt(rs.getString("cd_numero_endereco")));
+                endereco.setRua(rs.getString("nm_rua_endereco"));
+                        
+                //Configura o usuario
+                u = new User();
+                u.setId(rs.getInt("cd_usuario"));
+                u.setCelular(rs.getString("cd_celular_usuario"));
+                u.setCnpj(rs.getString("cd_cnpj_usuario"));
+                u.setCpf(rs.getString("cd_cpf_usuario"));
+                u.setEmail(rs.getString("nm_email_usuario"));
+                u.setEndereco(endereco);
+                u.setIsAdmin(rs.getBoolean("ic_admin_usuario_sim_nao"));
+                u.setIsAtivo(rs.getBoolean("ic_ativo_usuario_sim_nao"));
+                u.setLogin(rs.getString("nm_login_usuario"));
+                u.setName(rs.getString("nm_usuario"));
+                u.setSenha(rs.getString("cd_senha_usuario"));
+                u.setTelefone(rs.getString("cd_telefone_usuario"));
+            }
+            
+            return u;
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        } finally {
+            stmt.close();
             conn.close();
         }
         

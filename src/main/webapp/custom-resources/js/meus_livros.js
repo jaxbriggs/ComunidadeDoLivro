@@ -1,6 +1,7 @@
 //Global scope
 var qtdPerPage = 5; //Quantidade de livros por pagina
 var pageNumber = 1;
+var resetDoacao = true;
 
 $(document).ready (function(){
 
@@ -251,20 +252,45 @@ function buildBooksList(data, operation){
                                 html += 
                                 "<span class=\"label label-warning qtdTag\" id=\"qtd"+data[i].cdTransacao+"\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"Clique para editar\">Quantidade: "+data[i].qtLivroTransacao+"</span>\n" + 
                                 "<span class=\"label label-success\">Disponível Para Doação</span>\n";
+                            } 
+
+                            if(data[i].candidatosIds.length > 0){
+                                    html +=
+                                    "<span class=\"label label-info\">"+data[i].candidatosIds.length+" Candidato(s)</span>\n";                                    
                             }
 
-                        html +=  
-                        "<div style=\"float:right; margin-top:-3%;\" class=\"row\">" + 
-                            "<div class=\"col-xs-6\">" +
-                                "<a title='Remover' data-toggle=\"remover\" class=\"remocaoLivro\" id=\"rem"+data[i].cdTransacao+"\"><img height=\"32px\" width=\"32px\" src=\"../custom-resources/img/delete_img.png\"/></a>" +
-                            "</div>" +
-                            "<div class=\"col-xs-6\" style=\"margin-top: -22px;\">" +
-                                "<input type=\"checkbox\" name=\""+data[i].cdTransacao+"\" id=\""+data[i].cdTransacao+"\" class=\"toggle\" ";
-                                html += data[i].isAtivada ? "checked>" : ">";
-                                html +=
-                                "<label for=\""+data[i].cdTransacao+"\" class=\"toggleLabel\"></label>" +
-                            "</div>" +
-                        "</div>" +
+                        if(data[i].candidatosIds.length > 0){
+                            html +=  
+                            "<div style=\"float:right; margin-top:-3%;\" class=\"row\">" + 
+                                "<div class=\"col-xs-6\">" +
+                                    "<button id=\"btnListaCandidatos\" type=\"button\" class=\"btn btn-info\">Lista de Candidatos</button>" +
+                                "</div>" +
+                                "<div class=\"col-xs-3\">" +
+                                    "<a title='Remover' data-toggle=\"remover\" class=\"remocaoLivro\" id=\"rem"+data[i].cdTransacao+"\"><img height=\"32px\" width=\"32px\" src=\"../custom-resources/img/delete_img.png\"/></a>" +
+                                "</div>" +
+                                "<div class=\"col-xs-3\" style=\"margin-top: -22px;\">" +
+                                    "<input type=\"checkbox\" name=\""+data[i].cdTransacao+"\" id=\""+data[i].cdTransacao+"\" class=\"toggle\" ";
+                                    html += data[i].isAtivada ? "checked>" : ">";
+                                    html +=
+                                    "<label for=\""+data[i].cdTransacao+"\" class=\"toggleLabel\"></label>" +
+                                "</div>" +
+                            "</div>";
+                        } else {
+                            html +=  
+                            "<div style=\"float:right; margin-top:-3%;\" class=\"row\">" + 
+                                "<div class=\"col-xs-6\">" +
+                                    "<a title='Remover' data-toggle=\"remover\" class=\"remocaoLivro\" id=\"rem"+data[i].cdTransacao+"\"><img height=\"32px\" width=\"32px\" src=\"../custom-resources/img/delete_img.png\"/></a>" +
+                                "</div>" +
+                                "<div class=\"col-xs-6\" style=\"margin-top: -22px;\">" +
+                                    "<input type=\"checkbox\" name=\""+data[i].cdTransacao+"\" id=\""+data[i].cdTransacao+"\" class=\"toggle\" ";
+                                    html += data[i].isAtivada ? "checked>" : ">";
+                                    html +=
+                                    "<label for=\""+data[i].cdTransacao+"\" class=\"toggleLabel\"></label>" +
+                                "</div>" +
+                            "</div>";
+                        }
+
+                        html +=
                         "</p>" +
                     "</div>" +
                 "</div>" +
@@ -372,16 +398,18 @@ function buildBooksList(data, operation){
     $("#meusLivrosPaginator").find($("input[class='toggle']")).unbind( "change" );
 
     //Configura o evento de doacao quando o checkbox de doacao e alterado
-    $("#meusLivrosPaginator").find($("input[class='toggle']")).change(function() {
+    $("#meusLivrosPaginator").find($("input[class='toggle']")).change(function(e) {
         if(this.checked){
             var qtdLivrosDoados = prompt("Quantos volumes deste livro serão doados?", "1");
             if(qtdLivrosDoados != null){
                 doarLivro($(this).attr("id"), this.checked, qtdLivrosDoados);
             } else {
-                $(this).attr('checked', !this.checked); 
+                if(resetDoacao){
+                    $(this).attr('checked', !this.checked); 
+                }
             }
         } else {
-            doarLivro($(this).attr("id"), this.checked, "0");
+            doarLivro($(this).attr("id"), this.checked, "0"); //Implementar
         }      
     });
 
@@ -392,8 +420,10 @@ function buildBooksList(data, operation){
 
   $('[data-toggle="tooltip"]').tooltip();
   $('[data-toggle="tooltip"]').click(function(){
+    resetDoacao = false;
     $("#meusLivrosPaginator").find($("#"+this.id.replace("qtd", ""))).change();
-    $("#meusLivrosPaginator").find($("input[class='toggle']")).unbind( "change" );
+    resetDoacao = true;
+    //$("#meusLivrosPaginator").find($("input[class='toggle']")).unbind( "change" );
   });
 } 
 

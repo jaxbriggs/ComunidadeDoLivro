@@ -25,7 +25,6 @@
         <link rel="stylesheet" href="../jquery/jquery-ui-1.11.4/themes/smoothness/jquery-ui.min.css">
         <link rel="stylesheet" type="text/css" href="../custom-resources/css/general.css">
         <link rel="stylesheet" type="text/css" href="../custom-resources/css/toggle.css">
-        <link rel="stylesheet" type="text/css" href="../jPaginate/css/style.css">
         <script src="jquery/jquery-1.12.1.min.js"></script>
         <script src="../jquery/jquery-ui-1.11.4/jquery-ui.min.js"></script>
         <script src="bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
