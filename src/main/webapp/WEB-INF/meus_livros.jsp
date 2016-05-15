@@ -125,6 +125,58 @@
             </div>
         </div>
         <!--FIM MODAL NOVO LIVRO-->
+        
+        <!--MODAL CANDIDATOS-->
+        <div class="modal fade" id="modal_candidatos" tabindex="-1" role="dialog" aria-labelledby="modalCandidatos">
+            <div class="modal-dialog" role="document" style="margin-bottom: 5%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalCandidadtosLabel">Candidatos Nesta Doação</h4>
+                    </div>
+                    <div class="modal-body" id="listaCandidadtosModalBody">
+                        <!--
+                        <div class="panel panel-info">
+                            <div class="panel-heading"><h4>Carlos Henrique Scalassara Ferreira Menezes</h4></div>
+                            <div class="panel-body">
+                                <div class="container-fluid">
+                                    <!-- ENDERECO 
+                                    <div class="row">
+                                        <div class=" col-xs-12">
+                                            <h5><b>Endereço</b></h5>
+                                            <div class="alert alert-warning" role="alert">
+                                                <p>
+                                                    <b>Rua: </b>Germano Marconato, 
+                                                    <b>Nº: </b> 210
+                                                    <b>CEP: </b> 11850-950
+                                                </p>
+                                                <p><b>Cidade: </b>Praia Grande, SP</p>
+                                            </div>
+                                            
+                                            <h5><b>Estatísticas</b></h5>
+                                            <div class="alert alert-success" role="alert">
+                                                <p style="text-align: center;">
+                                                    <b>5</b> livros <b>doados</b> | 
+                                                    <b>30</b> livros <b>recebidos</b> | 
+                                                    Candidato em <b>15</b> livros. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer" style="text-align: center;">
+                                <button type="button" class="btn btn-info">Eleger</button>
+                            </div>
+                        </div>
+                        -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--FIM MODAL CANDIDATOS-->
 
         <!-- MENU SUPERIOR DE CADASTRO E CONSULTA DE LIVROS -->                  
         <nav class="navbar navbar-default">

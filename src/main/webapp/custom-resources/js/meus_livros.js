@@ -4,7 +4,6 @@ var pageNumber = 1;
 var resetDoacao = true;
 
 $(document).ready (function(){
-
     //Pega todas as transacoes do usuario e monta a lista dinamicamente
     getAllTransacoesByUserWithLimit($("#userId").val(), qtdPerPage, 1, $("#filtroId").val());
 
@@ -263,7 +262,7 @@ function buildBooksList(data, operation){
                             html +=  
                             "<div style=\"float:right; margin-top:-3%;\" class=\"row\">" + 
                                 "<div class=\"col-xs-6\">" +
-                                    "<button id=\"btnListaCandidatos\" type=\"button\" class=\"btn btn-info\">Lista de Candidatos</button>" +
+                                    "<button id=\"\" type=\"button\" class=\"btn btn-info btnListaCandidatos\">Lista de Candidatos</button>" +
                                 "</div>" +
                                 "<div class=\"col-xs-3\">" +
                                     "<a title='Remover' data-toggle=\"remover\" class=\"remocaoLivro\" id=\"rem"+data[i].cdTransacao+"\"><img height=\"32px\" width=\"32px\" src=\"../custom-resources/img/delete_img.png\"/></a>" +
@@ -388,7 +387,34 @@ function buildBooksList(data, operation){
         $("#meusLivrosPaginator").append(phtml);
     }
 
+    //Configura o botao que mostra a lista de cadastrados
+    $("#meusLivrosPaginator").find($(".btnListaCandidatos")).unbind( "click" );
+    $("#meusLivrosPaginator").find($(".btnListaCandidatos")).click(function(){
+        var transacaoId = "";
+        if($(this).parents()[4].id.substr(4) != transacaoId){
+            transacaoId = $(this).parents()[4].id.substr(4);
+        }
 
+        jQuery.ajax({
+            url: '/eleicao_transacao',
+            type: 'GET',
+            contentType: 'application/json',
+            data: {getCandidatosByTransacaoId: JSON.stringify({tId:transacaoId})},   
+            dataType: 'json',
+            success: function(data){
+                criarListaCandidatos(data, transacaoId);
+            },
+            fail: function() {
+                console.log( "error" );
+            },
+            always: function() {
+                console.log( "complete" );
+            }
+        });
+
+        criarListaCandidatos(transacaoId);
+    });
+    
     //Configura o tootip do remover livro
     $("#meusLivrosPaginator").find($('[data-toggle="remover"]')).tooltip();
 
@@ -425,7 +451,76 @@ function buildBooksList(data, operation){
     resetDoacao = true;
     //$("#meusLivrosPaginator").find($("input[class='toggle']")).unbind( "change" );
   });
-} 
+}
+
+function criarListaCandidatos(usersData, transacaoId){
+    $("#listaCandidadtosModalBody").empty();
+    
+    var html = "";
+    $.each(usersData, function( index, value ) {    
+        html += "<div class=\"panel panel-info\">" +
+                    "<div class=\"panel-heading\"><h4>"+value.nm_usuario+"</h4></div>" +
+                    "<div class=\"panel-body\">" +
+                        "<div class=\"container-fluid\">" +
+                            "<div class=\"row\">" +
+                                "<div class=\" col-xs-12\">" +
+                                    "<h5><b>Endereço</b></h5>" +
+                                    "<div class=\"alert alert-warning\" role=\"alert\">" +
+                                        "<p>" +
+                                            "<b>Rua: </b>"+(value.nm_rua_endereco == "" ? "   -----   " : value.nm_rua_endereco)+", " +
+                                            "<b>Nº: </b> "+(value.cd_numero_endereco == "" ? "   -----   " : value.cd_numero_endereco)+" " +
+                                            "<b>CEP: </b> "+(value.cd_codigo_postal_endereco == "" ? "   -----   " : value.cd_codigo_postal_endereco)+
+                                        "</p>" +
+                                        "<p><b>Cidade: </b>"+(value.nm_cidade_endereco == "" ? "   -----   " : value.nm_cidade_endereco)+", "+($.trim(value.sg_unidade_federativa_endereco) == "" ? "   --   " : $.trim(value.sg_unidade_federativa_endereco))+"</p>" +
+                                    "</div>" +
+                                    
+                                    "<h5><b>Estatísticas</b></h5>" +
+                                    "<div class=\"alert alert-success\" role=\"alert\">" +
+                                        "<p style=\"text-align: center;\">" +
+                                            "<b>5</b> livros <b>doados</b> | " +
+                                            "<b>30</b> livros <b>recebidos</b> | " + 
+                                            "Candidato em <b>15</b> livros. </p>" +
+                                    "</div>" +
+                                "</div>" +
+                            "</div>" +
+                        "</div>" +
+                    "</div>" +
+                    "<div class=\"panel-footer\" style=\"text-align: center;\">" +
+                        "<button type=\"button\" class=\"btn btn-info btnElegerCandidato\" id=\"eleger"+value.cd_usuario+"\">Eleger</button>" +
+                    "</div>" +
+                "</div>";
+    });
+    
+    var phtml = $.parseHTML(html);
+    $("#listaCandidadtosModalBody").append(phtml);
+    
+    $("#listaCandidadtosModalBody").find($('.btnElegerCandidato')).unbind('click');
+    $("#listaCandidadtosModalBody").find($('.btnElegerCandidato')).click(function() {
+        var idCandidatoEleito = this.id.substring(6, this.id.length);
+        elegerCandidato(idCandidatoEleito, transacaoId);
+    });
+
+    $("#modal_candidatos").modal("toggle");
+}
+
+function elegerCandidato(candidatoId, transacaoId){
+    jQuery.ajax({
+        url: '/eleicao_transacao',
+        type: 'GET',
+        contentType: 'application/json',
+        data: {elegerCandidatoByIdAndTransacao: JSON.stringify({transacaoId:transacaoId, candidatoId:candidatoId})},   
+        dataType: 'json',
+        success: function(data){
+            console.log(data);
+        },
+        fail: function() {
+            console.log( "error" );
+        },
+        always: function() {
+            console.log( "complete" );
+        }
+    });
+}
 
 function consultarMeusLivros(text){
     if(text.length > 0){
@@ -455,4 +550,3 @@ function paginate(){
         }
     });
 }
-

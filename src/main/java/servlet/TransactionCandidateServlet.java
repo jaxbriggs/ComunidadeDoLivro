@@ -5,13 +5,22 @@
  */
 package servlet;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dao.TransacaoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,6 +54,9 @@ public class TransactionCandidateServlet extends HttpServlet {
         //Tenta pegar a operacao de eleicao
         String eleicao = request.getParameter("eleicaoJson");
         
+        //Tenta pegar a operacao de consulta de candidatos por id de transacao
+        String getCandidatosByTransacaoId = request.getParameter("getCandidatosByTransacaoId");
+        
         if(eleicao != null){
             Integer transacaoId = null;
             Integer userId = null;
@@ -77,14 +89,112 @@ public class TransactionCandidateServlet extends HttpServlet {
                     
             }
             
-        }
-        
-        //Retorna o JSON
-        PrintWriter out = response.getWriter();
-        
-        String r = "{\"success\":"+ String.valueOf(sucesso) +"}";
-        out.print(r);
-        out.flush();        
+            //Retorna o JSON
+            PrintWriter out = response.getWriter();
+
+            String r = "{\"success\":"+ String.valueOf(sucesso) +"}";
+            out.print(r);
+            out.flush();
+            
+        //Requisicao para consulta de Candidadtos por id da transacao
+        } else if(getCandidatosByTransacaoId != null){
+            Integer transacaoId = null;
+            
+            JsonObject jobj = new Gson().fromJson(getCandidatosByTransacaoId, JsonObject.class);
+            
+            transacaoId = jobj.get("tId").getAsInt();
+            
+            //Saida
+            JsonArray candidatos = new JsonArray();
+            
+            StringBuilder consulta = new StringBuilder(); 
+            consulta.append("select u.nm_usuario,");
+            consulta.append(" u.nm_email_usuario,");
+            consulta.append(" case");
+            consulta.append(" when cd_cnpj_usuario is null then");
+            consulta.append(" 'f'");
+            consulta.append(" else");
+            consulta.append(" 'j'");
+            consulta.append(" end,");
+            consulta.append(" u.cd_telefone_usuario,");
+            consulta.append(" u.cd_celular_usuario,");
+            consulta.append(" e.cd_codigo_postal_endereco,");
+            consulta.append(" e.nm_rua_endereco,");
+            consulta.append(" e.cd_numero_endereco,");
+            consulta.append(" e.nm_bairro_endereco,");
+            consulta.append(" e.nm_cidade_endereco,");
+            consulta.append(" e.sg_unidade_federativa_endereco,");
+            consulta.append(" u.cd_usuario");
+            consulta.append(" from comunidade_do_livro.transacao t");
+            consulta.append(" inner join comunidade_do_livro.usuario u on (t.cd_usuario_cadastrante = u.cd_usuario)");
+            consulta.append(" inner join comunidade_do_livro.endereco e on (u.cd_endereco_usuario = e.cd_endereco)");
+            consulta.append(" where t.cd_doador_usuario_transacao <> t.cd_usuario_cadastrante and");
+            consulta.append(" t.cd_doador_usuario_transacao is not null and");
+            consulta.append(" t.cd_donatario_usuario_transacao is not null and");
+            consulta.append(" t.cd_doador_usuario_transacao = (");
+            consulta.append(" select cd_doador_usuario_transacao");
+            consulta.append(" from comunidade_do_livro.transacao");
+            consulta.append(" where cd_transacao = ?");
+            consulta.append(" ) and");
+            consulta.append(" cd_livro_transacao = (");
+            consulta.append(" select cd_livro_transacao");
+            consulta.append(" from comunidade_do_livro.transacao");
+            consulta.append(" where cd_transacao = ?");
+            consulta.append(" ) and");
+            consulta.append(" t.ic_transacao_finalizada_sim_nao = false and");
+            consulta.append(" t.ic_transacao_autorizada_sim_nao = false and");
+            consulta.append(" t.ic_transacao_ativa_sim_nao = true;");
+            
+            try {
+                Connection conn = database.Connection.getConnection();
+                Integer rs = null;
+                PreparedStatement pstmt = null;
+                try {
+                    pstmt = conn.prepareStatement(consulta.toString());
+                    pstmt.setInt(1, transacaoId);
+                    pstmt.setInt(2, transacaoId);
+                    
+                    ResultSet resSet = pstmt.executeQuery();
+                    while(resSet.next()){
+                        JsonObject candidato = new JsonObject();
+                        candidato.addProperty("nm_usuario", resSet.getString(1));
+                        candidato.addProperty("nm_email_usuario", resSet.getString(2));
+                        candidato.addProperty("cd_cnpj_usuario", resSet.getString(3));
+                        candidato.addProperty("cd_telefone_usuario", resSet.getString(4));
+                        candidato.addProperty("cd_celular_usuario", resSet.getString(5));
+                        candidato.addProperty("cd_codigo_postal_endereco", resSet.getString(6));
+                        candidato.addProperty("nm_rua_endereco", resSet.getString(7));
+                        candidato.addProperty("cd_numero_endereco", resSet.getInt(8));
+                        candidato.addProperty("nm_bairro_endereco", resSet.getString(9));
+                        candidato.addProperty("nm_cidade_endereco", resSet.getString(10));
+                        candidato.addProperty("sg_unidade_federativa_endereco", resSet.getString(11));
+                        candidato.addProperty("cd_usuario", resSet.getInt(12));
+                        candidatos.add(candidato);
+                    }
+                }  catch (SQLException ex) {
+                    ex.printStackTrace();
+                }  finally {
+                    try {
+                        pstmt.close();
+                        conn.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(TransactionCandidateServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(TransactionCandidateServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            //Retorna o JSON
+            PrintWriter out = response.getWriter();
+            
+            Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+            
+            out.print(gson.toJson(candidatos));
+            out.flush();
+        }        
     }
     
     @Override

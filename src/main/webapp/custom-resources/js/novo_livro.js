@@ -123,10 +123,12 @@ $(document).ready(function() {
     
     //Reseta informacoes do modal quando cancelado
     $('.modal').on('hidden.bs.modal', function(){
-        $(this).find('form')[0].reset();
-        $('#imgCapa').attr('src', semCapa);
-        disableLivroFormFields(false, []);
-        $("#alertCadastroFalha").hide();
+        if(typeof $(this).find('form')[0] !== 'undefined'){
+            $(this).find('form')[0].reset();
+            $('#imgCapa').attr('src', semCapa);
+            disableLivroFormFields(false, []);
+            $("#alertCadastroFalha").hide();
+        }
     });
     
     //Manda a requisicao para o servlet que cadastra o livro
