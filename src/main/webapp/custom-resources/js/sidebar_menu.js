@@ -72,6 +72,12 @@ $('#cadastro_btn').click(function(e) {
     } else {
         $("#menu-toggle-2").css("display", "inline");
     }
+    
+    $("#imgUserConfigs").click(function () {
+        var dataContent = "<button type=\"button\" class=\"btn btn-primary\" onClick=\"loadPageByPickedMenu('#configuracoes', '/configuracoes')\">Configurações</button>";
+        $(this).attr('data-content', dataContent);
+        $(this).popover("toggle");
+    });
 }
 
 $(document).ready(function() {

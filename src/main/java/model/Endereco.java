@@ -12,16 +12,16 @@ package model;
 public class Endereco {
     private String cep;
     private String rua;
-    private int numero;
+    private Integer numero;
     private String bairro;
     private String cidade;
     private String estado;
     
     public Endereco(){
-        this.numero = -1;
+        this.numero = null;
     }
-    
-    public Endereco(String cep, String rua, int numero, String bairro, String cidade, String estado) {
+
+    public Endereco(String cep, String rua, Integer numero, String bairro, String cidade, String estado) {
         this.cep = cep;
         this.rua = rua;
         this.numero = numero;
@@ -46,13 +46,13 @@ public class Endereco {
         this.rua = rua;
     }
 
-    public int getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 
-    public void setNumero(int numero) {
+    public void setNumero(Integer numero) {
         this.numero = numero;
-    }
+    }    
 
     public String getBairro() {
         return bairro;

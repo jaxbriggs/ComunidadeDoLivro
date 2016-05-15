@@ -197,6 +197,7 @@
         <%} else {%>
             <div class="collapse navbar-collapse pull-right">
                 <ul class="nav navbar-nav">
+                    <li><a id="imgUserConfigs" role="button" data-toggle="popover" title="<%= user.getName() %>" data-html="true" data-placement="bottom" tabindex="0" data-trigger="focus"><img src="../custom-resources/img/user.png" width="40px" height="40px"/></a></li>
                     <li><button id="sair_btn" onClick="setPick('sair'); submitPickSenderForm();" type="button" class="btn btn-default navbar-btn">Sair</button></li>
                 </ul>            
             </div>
