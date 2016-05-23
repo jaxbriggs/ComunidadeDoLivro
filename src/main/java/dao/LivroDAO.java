@@ -62,6 +62,7 @@ public class LivroDAO {
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
+                return null;
             } finally {
                 pstmt.close();
                 conn.close();

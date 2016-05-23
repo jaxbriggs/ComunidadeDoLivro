@@ -31,7 +31,9 @@ function loadPageByPickedMenu(element, pageLoadedPath){
 
 //Reseta informacoes do modal quando cancelado
 $('.modal').on('hidden.bs.modal', function(){
+  if(typeof $(this).find('form')[0] !== 'undefined'){
     $(this).find('form')[0].reset();
+  }
 });
 
 //Abre o modal de login quando clicado

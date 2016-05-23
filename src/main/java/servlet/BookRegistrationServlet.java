@@ -5,13 +5,20 @@
  */
 package servlet;
 
+import com.google.gson.JsonObject;
 import dao.LivroDAO;
 import dao.TransacaoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -79,15 +86,59 @@ public class BookRegistrationServlet extends HttpServlet {
         LivroDAO dao = new LivroDAO();
         
         //Grava o livro no banco
-        boolean sucesso = false;
+        boolean sucesso = false, jaPossuiLivro = false;
         Integer cdTransacao = null;
         Integer cdLivro = null;
         try {
             cdLivro = dao.registerLivro(livro);
             if(cdLivro != null){
-                sucesso = false;
-            } 
-            sucesso = true;
+                sucesso = true;
+            }
+            
+            //Verifica se usuario ja possui o livro cadastrado como uma transacao
+            String verificaLivro = "select count(*)" +
+                                    " from comunidade_do_livro.transacao t" +
+                                    " where cd_usuario_cadastrante = "+usuarioId+" and" +
+                                    " t.cd_doador_usuario_transacao = "+usuarioId+" and" +
+                                    " t.cd_donatario_usuario_transacao is null and" +
+                                    " t.cd_livro_transacao = (" +
+                                    " select l.cd_livro" +
+                                    " from comunidade_do_livro.livro l" +
+                                    " where l.cd_isbn_livro = '"+livro.getIsbn()+"'" +
+                                    " );";
+
+            try {
+               Connection conn = database.Connection.getConnection();
+               Statement stmt = null;
+
+               try {
+                   stmt = conn.createStatement();
+
+                   ResultSet resSet = stmt.executeQuery(verificaLivro);
+                   while(resSet.next()){
+                       jaPossuiLivro = resSet.getInt(1) > 0;
+                   }
+               }  catch (SQLException ex) {
+                   ex.printStackTrace();
+                   sucesso = false;
+               }  finally {
+                   try {
+                       stmt.close();
+                       conn.close();
+                   } catch (SQLException ex) {
+                       ex.printStackTrace();
+                       sucesso = false;
+                   }
+               }
+
+               } catch (URISyntaxException ex) {
+                   ex.printStackTrace();
+                   sucesso = false;
+               } catch (SQLException ex) {
+                   ex.printStackTrace();
+                   sucesso = false;
+               }
+                 
         } catch (SQLException ex) {
             ex.printStackTrace();
             sucesso = false;
@@ -96,41 +147,43 @@ public class BookRegistrationServlet extends HttpServlet {
             sucesso = false;
         }
         
-        //Grava o livro como uma transacao nao iniciada
-        if(sucesso){
-            
-            Livro livroAux = null;
-            try {
-                livroAux = dao.getLivroByISBN(isbn);
-            } catch (SQLException ex) {
-                sucesso = false;
-                ex.printStackTrace();
-            }
-            
-            Transacao t = new Transacao();
-            User doador = new User();
-            doador.setId(usuarioId);
-            t.setDoador(doador);
-            t.setDonatario(null);
-            t.setCadastrante(doador);
-            t.setDescricao(null);
-            t.setIsAtivada(false);
-            t.setIsAutorizada(false);
-            t.setIsFinalizada(false);
-            t.setQtLivroTransacao(0);
-            t.setLivro(livroAux);
-            t.setDataCadastro(new Date());
-            t.setDataFinalizacao(null);
-            
-            TransacaoDAO tDao = new TransacaoDAO();
-            try {
-                cdTransacao = tDao.registerTransacao(t);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                sucesso = false;
-            } catch (URISyntaxException ex) {
-                ex.printStackTrace();
-                sucesso = false;
+        if(!jaPossuiLivro){
+            //Grava o livro como uma transacao nao iniciada
+            if(sucesso){
+
+                Livro livroAux = null;
+                try {
+                    livroAux = dao.getLivroByISBN(isbn);
+                } catch (SQLException ex) {
+                    sucesso = false;
+                    ex.printStackTrace();
+                }
+
+                Transacao t = new Transacao();
+                User doador = new User();
+                doador.setId(usuarioId);
+                t.setDoador(doador);
+                t.setDonatario(null);
+                t.setCadastrante(doador);
+                t.setDescricao(null);
+                t.setIsAtivada(false);
+                t.setIsAutorizada(false);
+                t.setIsFinalizada(false);
+                t.setQtLivroTransacao(0);
+                t.setLivro(livroAux);
+                t.setDataCadastro(new Date());
+                t.setDataFinalizacao(null);
+
+                TransacaoDAO tDao = new TransacaoDAO();
+                try {
+                    cdTransacao = tDao.registerTransacao(t);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    sucesso = false;
+                } catch (URISyntaxException ex) {
+                    ex.printStackTrace();
+                    sucesso = false;
+                }
             }
         }
         
@@ -138,7 +191,12 @@ public class BookRegistrationServlet extends HttpServlet {
         //Retorna o JSON
         PrintWriter out = response.getWriter();
         
-        String r = "{\"success\":"+ String.valueOf(sucesso) +", \"cdTransacao\":"+cdTransacao+"}";
+        String r = null;
+        if(!jaPossuiLivro){
+            r = "{\"success\":"+ String.valueOf(sucesso) +", \"cdTransacao\":"+cdTransacao+"}";
+        } else {
+            r = "{\"erro\":\"japossui\"}";
+        }
         out.print(r);
         out.flush();        
     }

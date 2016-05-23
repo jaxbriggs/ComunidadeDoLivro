@@ -10,6 +10,7 @@ import model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -44,8 +45,8 @@ public class UserLoginServlet extends HttpServlet {
         response.setContentType("application/json");
         
         //Pega os campos digutados
-        String login = request.getParameter("login");
-        String senha = request.getParameter("password");
+        String login = request.getParameter("login") == null ? (String)request.getAttribute("login") : request.getParameter("login");
+        String senha = request.getParameter("password") == null ? (String)request.getAttribute("password") : request.getParameter("password");
         
         //Faz a consulta do usuario
         UserDAO dao = new UserDAO();
@@ -56,13 +57,20 @@ public class UserLoginServlet extends HttpServlet {
             ex.printStackTrace();
         } 
         
-        //Transforma o usuario em um objeto JSON
-        String userJson = ObjectJson.getObjectJson(user);
-        
-        PrintWriter out = response.getWriter();
-        
-        out.print(userJson);
-        out.flush();
+        if(request.getAttribute("login") == null && request.getAttribute("password") == null){
+            //Transforma o usuario em um objeto JSON
+            String userJson = ObjectJson.getObjectJson(user);
+
+            PrintWriter out = response.getWriter();
+
+            out.print(userJson);
+            out.flush();
+        } else {
+            String userJson = ObjectJson.getObjectJson(user);
+            request.setAttribute("userJson",userJson);
+            RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+            rd.forward(request,response);
+        }
     }
     
     @Override

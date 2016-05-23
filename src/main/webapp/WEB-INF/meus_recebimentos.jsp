@@ -138,7 +138,10 @@
                 <%
                     if(userTransactions != null){
                         for(Transacao t : userTransactions){%>
-                        <div class="row" style="padding-top: 2%;">
+                        <div class="row" style="padding-top: 2%;" id="myTrans<%= t.getCdTransacao() %>">
+                            <form>
+                                <input type="hidden" id="donatarioId<%= t.getCdTransacao() %>" value="<%= t.getDonatario().getId() %>">
+                            </form>
                             <div class="col-xs-2 visible-lg" style="text-align: right;">
                                 <a class="img-thumbnail"><img id="imgCapa" src="<%= t.getLivro().getCapaLink() %>" height="211px" width="128px"></a>
                             </div>
@@ -158,33 +161,38 @@
                                     <p id="" style="float: bottom;">
                                         <span style=""><b>Iniciada em: </b> <%= t.getDataCadastro() %></span>
                                         <span style="padding-left: 5%;"><b>Finalizada em: </b> <%= t.getDataFinalizacao() == null ? "?" : t.getDataFinalizacao() %></span>
+                                        <span style="padding-left: 5%;"><b>Quantidade: </b> <%= t.getQtLivroTransacao() == null ? "?" : t.getQtLivroTransacao() %></span>
                                     </p>
-                                    <!--<div style="float:right; margin-top:-3%;" class="row">
-                                        <div class="col-xs-6">
-                                            <a data-original-title="Remover" title="" data-toggle="remover" class="remocaoLivro" id="rem452">
-                                                <img src="../custom-resources/img/delete_img.png" height="32px" width="32px">
-                                            </a>
-                                        </div>
-                                        <div class="col-xs-6" style="margin-top: -22px;">
-                                            <input name="452" id="452" class="toggle" type="checkbox">
-                                            <label title="" data-original-title="" for="452" class="toggleLabel"></label>
-                                        </div>
-                                    </div>-->
                                 </div>
                                 <div style="padding-top: 0.5%;">
-                                    <button type="button" class="btn btn-danger">Cancelar</button>
-                                    
-                                    <%//if(){%>    
-                                        <button type="button" class="btn btn-primary">Confirmar Recebimento</button>
-                                    <%//}%>
-                                    
-                                    <%//if(){%>  
-                                        <button type="button" class="btn btn-success">Comentarios</button>
-                                    <%//}%>
-                                    
-                                    <%if(t.getDataFinalizacao() != null){%>    
-                                        <button type="button" class="btn btn-warning">Reabrir</button>
+                                    <%if(t.getCadastrante().getId() != user.getId() && t.getIsAutorizada() && t.getDataFinalizacao() == null){%>    
+                                        <button type="button" class="btn btn-danger cancelarTransacao" id="cancelarTransacao<%= t.getCdTransacao()%>">Cancelar</button>
                                     <%}%>
+                                    
+                                    <%if(t.getCadastrante().getId() == user.getId() && t.getDataFinalizacao() == null){%>    
+                                        <button type="button" class="btn btn-default desistirTransacao" id="desistirTransacao<%= t.getCdTransacao()%>">Desistir</button>
+                                    <%}%>
+                                    
+                                    <%if(t.getCadastrante().getId() == user.getId() && t.getIsAutorizada() && t.getDataFinalizacao() == null){%>    
+                                        <button type="button" class="btn btn-primary confirmarRecebimento" id="confirmarRecebimento<%= t.getCdTransacao() %>">Confirmar Recebimento</button>
+                                    <%}%>
+                                    
+                                    <%//if(t.getCadastrante().getId() != user.getId() && t.getIsAutorizada() && t.getDataFinalizacao() == null){%>    
+                                        <!--<button type="button" class="btn btn-warning">Declarar Envio</button>-->
+                                    <%//}%>
+                                    
+                                    <%if(t.getDataFinalizacao() != null && t.getCadastrante().getId() == user.getId()){%>    
+                                        <button type="button" class="btn btn-warning reabrirTransacao" id="reabrirTransacao<%= t.getCdTransacao() %>">Reabrir</button>
+                                    <%}%>
+                                    
+                                    <%if(t.getDataFinalizacao() != null && t.getCadastrante().getId() != user.getId()){%>    
+                                        <button type="button" class="btn btn-warning" disabled="true">Transação Finalizada</button>
+                                    <%}%>
+                                    
+                                    <%if(t.getIsAutorizada()){%>  
+                                        <button type="button" class="btn btn-success">Comentarios</button>
+                                    <%}%>                                    
+                                    
                                 </div>
                             </div>
                         </div>

@@ -183,7 +183,7 @@ function buildBooksList(data, operation){
         html +=
         "<div class=\"livroRow row\" id=\"book"+data[i].cdTransacao+"\" style=\"padding-top:10px;\">" + 
                 "<div class=\"col-xs-2 visible-lg\" style=\"text-align: right;\">" +
-                    "<a class=\"img-thumbnail\">" +
+                    "<a class=\"img-thumbnail\" style=\"cursor: default;\">" +
                         "<img id=\"imgCapa\" src=\""+data[i].livro.capaLink+"\" height=\"211px\" width=\"128px\" />" +
                     "</a>" +
                 "</div>" +
@@ -459,7 +459,7 @@ function criarListaCandidatos(usersData, transacaoId){
     var html = "";
     $.each(usersData, function( index, value ) {    
         html += "<div class=\"panel panel-info\">" +
-                    "<div class=\"panel-heading\"><h4>"+value.nm_usuario+"</h4></div>" +
+                    "<div class=\"panel-heading\"><h4>"+value.nm_usuario+" ( "+value.qt_livro_transacao+" unidade(s) )</h4></div>" +
                     "<div class=\"panel-body\">" +
                         "<div class=\"container-fluid\">" +
                             "<div class=\"row\">" +
@@ -484,20 +484,45 @@ function criarListaCandidatos(usersData, transacaoId){
                                 "</div>" +
                             "</div>" +
                         "</div>" +
-                    "</div>" +
-                    "<div class=\"panel-footer\" style=\"text-align: center;\">" +
-                        "<button type=\"button\" class=\"btn btn-info btnElegerCandidato\" id=\"eleger"+value.cd_usuario+"\">Eleger</button>" +
-                    "</div>" +
+                    "</div>";
+
+                    if(!value.ic_transacao_finalizada_sim_nao){
+                        if(value.ic_transacao_autorizada_sim_nao){
+                            html +=
+                            "<div class=\"panel-footer\" style=\"text-align: center;\">" +
+                                "<button type=\"button\" class=\"btn btn-danger btnCancelarEleicaoCandidato\" id=\"cancelarEleicao"+value.cd_usuario+"\">Cancelar Eleição</button>" +
+                            "</div>";
+                        } else {
+                            html +=
+                            "<div class=\"panel-footer\" style=\"text-align: center;\">" +
+                                "<button type=\"button\" class=\"btn btn-info btnElegerCandidato\" id=\"eleger"+value.cd_usuario+"\">Eleger</button>" +
+                            "</div>";
+                        }
+                     } else {
+                        html +=
+                            "<div class=\"panel-footer\" style=\"text-align: center;\">" +
+                                "<button type=\"button\" class=\"btn btn-success\" disabled>Transação Finalizada</button>" +
+                            "</div>";
+                     }
+                html +=
                 "</div>";
     });
     
     var phtml = $.parseHTML(html);
     $("#listaCandidadtosModalBody").append(phtml);
     
+    //Botão que elege o candidato
     $("#listaCandidadtosModalBody").find($('.btnElegerCandidato')).unbind('click');
     $("#listaCandidadtosModalBody").find($('.btnElegerCandidato')).click(function() {
         var idCandidatoEleito = this.id.substring(6, this.id.length);
         elegerCandidato(idCandidatoEleito, transacaoId);
+    });
+
+    //Botão que des-elege o candidato
+    $("#listaCandidadtosModalBody").find($('.btnCancelarEleicaoCandidato')).unbind('click');
+    $("#listaCandidadtosModalBody").find($('.btnCancelarEleicaoCandidato')).click(function() {
+        var idCandidatoCancelado = this.id.substring(15, this.id.length);
+        cancelarEleicaoCandidato(idCandidatoCancelado, transacaoId);
     });
 
     $("#modal_candidatos").modal("toggle");
@@ -511,10 +536,59 @@ function elegerCandidato(candidatoId, transacaoId){
         data: {elegerCandidatoByIdAndTransacao: JSON.stringify({transacaoId:transacaoId, candidatoId:candidatoId})},   
         dataType: 'json',
         success: function(data){
-            console.log(data);
+            if(typeof data.erro == 'undefined'){
+                if(data.success) {
+                    $("#eleger"+candidatoId).removeClass('btn-info btnElegerCandidato'); 
+                    $("#eleger"+candidatoId).addClass('btn-danger btnCancelarEleicaoCandidato');
+                    $("#eleger"+candidatoId).html('Cancelar Eleição');
+                    $("#eleger"+candidatoId).attr("id","cancelarEleicao"+candidatoId);
+
+                    //Reconfigura o click do botao cancelar eleicao
+                    $("#listaCandidadtosModalBody").find($('.btnCancelarEleicaoCandidato')).unbind('click');
+                    $("#listaCandidadtosModalBody").find($('.btnCancelarEleicaoCandidato')).click(function() {
+                        var idCandidatoCancelado = this.id.substring(15, this.id.length);
+                        cancelarEleicaoCandidato(idCandidatoCancelado, transacaoId);
+                    });
+                }
+            } else {
+                if(data.erro == 'quantidade'){
+                    alert("Você não pode doar mais unidades do que possuí!");
+                }
+            }
         },
         fail: function() {
-            console.log( "error" );
+            alert("Erro ao eleger candidato!");
+        },
+        always: function() {
+            console.log( "complete" );
+        }
+    });
+}
+
+function cancelarEleicaoCandidato(candidatoId, transacaoId){
+    jQuery.ajax({
+        url: '/eleicao_transacao',
+        type: 'GET',
+        contentType: 'application/json',
+        data: {deselegerCandidatoByIdAndTransacao: JSON.stringify({transacaoId:transacaoId, candidatoId:candidatoId})},   
+        dataType: 'json',
+        success: function(data){
+            if(data.success){
+                $("#cancelarEleicao"+candidatoId).removeClass('btn-danger btnCancelarEleicaoCandidato');
+                $("#cancelarEleicao"+candidatoId).addClass('btn-info btnElegerCandidato');
+                $("#cancelarEleicao"+candidatoId).html('Eleger');
+                $("#cancelarEleicao"+candidatoId).attr("id","eleger"+candidatoId);
+
+                //Reconfigura o click do botao eleger
+                $("#listaCandidadtosModalBody").find($('.btnElegerCandidato')).unbind('click');
+                $("#listaCandidadtosModalBody").find($('.btnElegerCandidato')).click(function() {
+                    var idCandidatoEleito = this.id.substring(6, this.id.length);
+                    elegerCandidato(idCandidatoEleito, transacaoId);
+                });
+            }
+        },
+        fail: function() {
+            alert("Erro ao cancelar eleição!");
         },
         always: function() {
             console.log( "complete" );
