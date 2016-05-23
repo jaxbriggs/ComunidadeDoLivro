@@ -48,6 +48,7 @@ public class TransactionCandidateServlet extends HttpServlet {
         
         //Variavel que aponta o resultado das transacoes com o banco
         boolean sucesso = false;
+        String retorno = "";
         
         response.setContentType("application/json");
         
@@ -56,6 +57,21 @@ public class TransactionCandidateServlet extends HttpServlet {
         
         //Tenta pegar a operacao de consulta de candidatos por id de transacao
         String getCandidatosByTransacaoId = request.getParameter("getCandidatosByTransacaoId");
+        
+        //Tenta pegar o id do candidato e da transacao na qual o candidato foi eleito
+        String elegerCandidatoByIdAndTransacao = request.getParameter("elegerCandidatoByIdAndTransacao");
+        
+        //Tenta pegar o id do candidato e o id da transacao da qual deseja-se cancelar sua eleicao previa
+        String deselegerCandidatoByIdAndTransacao = request.getParameter("deselegerCandidatoByIdAndTransacao");
+        
+        //Tenta pegar o id da transacao da qual o usuario esta desistindo
+        String desistirOnTransacao = request.getParameter("desistirOnTransacao");
+        
+        //Tenta pegar o id da transacao da qual o usuario declarou ter recebido o livro
+        String confirmarRecebimento = request.getParameter("confirmarRecebimento");
+        
+        //Tenta pegar o id da transação sendo reaberta
+        String reabrirTransacao = request.getParameter("reabrirTransacao");
         
         if(eleicao != null){
             Integer transacaoId = null;
@@ -124,7 +140,11 @@ public class TransactionCandidateServlet extends HttpServlet {
             consulta.append(" e.nm_bairro_endereco,");
             consulta.append(" e.nm_cidade_endereco,");
             consulta.append(" e.sg_unidade_federativa_endereco,");
-            consulta.append(" u.cd_usuario");
+            consulta.append(" u.cd_usuario,");
+            consulta.append(" t.ic_transacao_autorizada_sim_nao,");
+            consulta.append(" t.qt_livro_transacao,");
+            consulta.append(" t.ic_transacao_finalizada_sim_nao,");
+            consulta.append(" t.ic_transacao_ativa_sim_nao");
             consulta.append(" from comunidade_do_livro.transacao t");
             consulta.append(" inner join comunidade_do_livro.usuario u on (t.cd_usuario_cadastrante = u.cd_usuario)");
             consulta.append(" inner join comunidade_do_livro.endereco e on (u.cd_endereco_usuario = e.cd_endereco)");
@@ -140,10 +160,8 @@ public class TransactionCandidateServlet extends HttpServlet {
             consulta.append(" select cd_livro_transacao");
             consulta.append(" from comunidade_do_livro.transacao");
             consulta.append(" where cd_transacao = ?");
-            consulta.append(" ) and");
-            consulta.append(" t.ic_transacao_finalizada_sim_nao = false and");
-            consulta.append(" t.ic_transacao_autorizada_sim_nao = false and");
-            consulta.append(" t.ic_transacao_ativa_sim_nao = true;");
+            consulta.append(" )");
+            consulta.append(" order by t.ic_transacao_autorizada_sim_nao desc;");
             
             try {
                 Connection conn = database.Connection.getConnection();
@@ -169,6 +187,11 @@ public class TransactionCandidateServlet extends HttpServlet {
                         candidato.addProperty("nm_cidade_endereco", resSet.getString(10));
                         candidato.addProperty("sg_unidade_federativa_endereco", resSet.getString(11));
                         candidato.addProperty("cd_usuario", resSet.getInt(12));
+                        candidato.addProperty("ic_transacao_autorizada_sim_nao", resSet.getBoolean(13));
+                        candidato.addProperty("qt_livro_transacao", resSet.getInt(14));
+                        candidato.addProperty("ic_transacao_finalizada_sim_nao", resSet.getBoolean(15));
+                        candidato.addProperty("ic_transacao_ativa_sim_nao", resSet.getBoolean(16));
+            
                         candidatos.add(candidato);
                     }
                 }  catch (SQLException ex) {
@@ -194,7 +217,145 @@ public class TransactionCandidateServlet extends HttpServlet {
             
             out.print(gson.toJson(candidatos));
             out.flush();
-        }        
+        
+        } else if(elegerCandidatoByIdAndTransacao != null) {
+            
+            Integer transacaoId = null,
+                    candidatoId = null;
+            
+            JsonObject jobj = new Gson().fromJson(elegerCandidatoByIdAndTransacao, JsonObject.class);
+            
+            transacaoId = jobj.get("transacaoId").getAsInt();
+            candidatoId = jobj.get("candidatoId").getAsInt();
+            
+            TransacaoDAO tDao = new TransacaoDAO();
+            try{
+               retorno = tDao.elegerCandidadoInTransacao(transacaoId, candidatoId);
+            } catch (SQLException ex) {
+                retorno = "{\"success\":\"false\"}";
+                ex.printStackTrace();
+            } catch (URISyntaxException ex) {
+                retorno = "{\"success\":\"false\"}";
+                ex.printStackTrace();
+            }
+            
+            //Retorna o JSON
+            PrintWriter out = response.getWriter();
+
+            String r = retorno;
+            out.print(r);
+            out.flush();
+            
+        } else if(deselegerCandidatoByIdAndTransacao != null) {
+            
+            Integer transacaoId = null,
+                    candidatoId = null;
+            
+            JsonObject jobj = new Gson().fromJson(deselegerCandidatoByIdAndTransacao, JsonObject.class);
+            
+            transacaoId = jobj.get("transacaoId").getAsInt();
+            candidatoId = jobj.get("candidatoId").getAsInt();
+            
+            TransacaoDAO tDao = new TransacaoDAO();
+            try{
+               sucesso = tDao.cancelarEleicaoCandidadoInTransacao(transacaoId, candidatoId);
+            } catch (SQLException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            } catch (URISyntaxException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            }
+            
+            //Retorna o JSON
+            PrintWriter out = response.getWriter();
+
+            String r = "{\"success\":"+sucesso+"}";
+            out.print(r);
+            out.flush();
+            
+        } else if(desistirOnTransacao != null) {
+            
+            Integer transacaoId = null,
+                    candidatoId = null;
+            
+            JsonObject jobj = new Gson().fromJson(desistirOnTransacao, JsonObject.class);
+            
+            transacaoId = jobj.get("transacaoId").getAsInt();
+            candidatoId = jobj.get("candidatoId").getAsInt();
+            
+            TransacaoDAO tDao = new TransacaoDAO();
+            try{
+               sucesso = tDao.desistirDeTransacao(transacaoId, candidatoId);
+            } catch (SQLException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            } catch (URISyntaxException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            }
+            
+            //Retorna o JSON
+            PrintWriter out = response.getWriter();
+
+            String r = "{\"success\":"+sucesso+"}";
+            out.print(r);
+            out.flush();
+            
+        } else if(confirmarRecebimento != null) {
+            
+            Integer transacaoId = null;
+            
+            JsonObject jobj = new Gson().fromJson(confirmarRecebimento, JsonObject.class);
+            
+            transacaoId = jobj.get("transacaoId").getAsInt();
+            
+            TransacaoDAO tDao = new TransacaoDAO();
+            try{
+               sucesso = tDao.finalizarTransacao(transacaoId);
+            } catch (SQLException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            } catch (URISyntaxException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            }
+            
+            //Retorna o JSON
+            PrintWriter out = response.getWriter();
+
+            String r = "{\"success\":"+sucesso+"}";
+            out.print(r);
+            out.flush();
+            
+        } else if(reabrirTransacao != null) {
+            
+            Integer transacaoId = null;
+            
+            JsonObject jobj = new Gson().fromJson(reabrirTransacao, JsonObject.class);
+            
+            transacaoId = jobj.get("transacaoId").getAsInt();
+            
+            TransacaoDAO tDao = new TransacaoDAO();
+            try{
+               sucesso = tDao.reabrirTransacao(transacaoId);
+            } catch (SQLException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            } catch (URISyntaxException ex) {
+                sucesso = false;
+                ex.printStackTrace();
+            }
+            
+            //Retorna o JSON
+            PrintWriter out = response.getWriter();
+
+            String r = "{\"success\":"+sucesso+"}";
+            out.print(r);
+            out.flush();
+            
+        }
+        
     }
     
     @Override

@@ -10,9 +10,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import model.Transacao;
 
@@ -516,15 +518,24 @@ public class TransacaoDAO {
         query.append("t1.dt_cadastro_transacao,");
         query.append("t1.dt_transacao_finalizada,");
         query.append("t1.cd_doador_usuario_transacao,");
-        query.append("t1.cd_usuario_cadastrante");
+        query.append("t1.cd_usuario_cadastrante,");
+        query.append("t1.cd_donatario_usuario_transacao");
         query.append(" from comunidade_do_livro.transacao t1");
-        query.append(" where t1.cd_doador_usuario_transacao <> ");
+        query.append(" where (t1.cd_doador_usuario_transacao <>");
         query.append(userId);
         query.append(" and t1.cd_usuario_cadastrante = ");
         query.append(userId);
         query.append(" and t1.cd_donatario_usuario_transacao = ");
         query.append(userId);
-        query.append(" and t1.cd_doador_usuario_transacao is not null;");
+        query.append(" ) or (");
+        query.append(" t1.cd_doador_usuario_transacao = ");
+        query.append(userId);
+        query.append(" and");
+        query.append(" t1.cd_donatario_usuario_transacao is not null and");
+        query.append(" ic_transacao_autorizada_sim_nao = true");
+        query.append(" )");
+        query.append(" and t1.cd_doador_usuario_transacao is not null");
+        query.append(" order by t1.ic_transacao_autorizada_sim_nao desc, t1.dt_cadastro_transacao desc;");
         
         Connection conn = database.Connection.getConnection();
         ResultSet rs;
@@ -541,8 +552,8 @@ public class TransacaoDAO {
                 LivroDAO livroDao = new LivroDAO();
                 transacao.setLivro(livroDao.getLivroByCodigo(rs.getInt("cd_livro_transacao")));
                 
-                
                 //Pega os donatarios das transacoes
+                /*
                 StringBuilder transacaoOrigemQuery = new StringBuilder();
                 transacaoOrigemQuery.append("select t.cd_donatario_usuario_transacao");
                 transacaoOrigemQuery.append(" from comunidade_do_livro.transacao t");
@@ -567,7 +578,10 @@ public class TransacaoDAO {
                 UserDAO uDao = new UserDAO();
                 while(origemRs.next()){
                     transacao.setDonatario(uDao.getUserById(origemRs.getInt(1)));
-                }
+                }*/
+                
+                UserDAO uDao = new UserDAO();
+                transacao.setDonatario(uDao.getUserById(rs.getInt("cd_donatario_usuario_transacao")));
                 
                 transacao.setIsFinalizada(rs.getBoolean("ic_transacao_finalizada_sim_nao"));
                 transacao.setIsAutorizada(rs.getBoolean("ic_transacao_autorizada_sim_nao"));
@@ -668,6 +682,22 @@ public class TransacaoDAO {
         updateTransacao.append(transacaoId);
         updateTransacao.append(" RETURNING cd_transacao;");
         
+        StringBuilder destroyCandidatos = new StringBuilder();
+        destroyCandidatos.append("delete from comunidade_do_livro.transacao t1");
+        destroyCandidatos.append(" where t1.cd_transacao in (");
+        destroyCandidatos.append(" select t.cd_transacao");
+        destroyCandidatos.append(" from comunidade_do_livro.transacao t");
+        destroyCandidatos.append(" inner join comunidade_do_livro.usuario u on (t.cd_usuario_cadastrante = u.cd_usuario)");
+        destroyCandidatos.append(" inner join comunidade_do_livro.endereco e on (u.cd_endereco_usuario = e.cd_endereco)");
+        destroyCandidatos.append(" where t.cd_doador_usuario_transacao <> t.cd_usuario_cadastrante");
+        destroyCandidatos.append(" and t.cd_doador_usuario_transacao is not null");
+        destroyCandidatos.append(" and t.cd_donatario_usuario_transacao is not null");
+        destroyCandidatos.append(" and t.cd_doador_usuario_transacao = ( select cd_doador_usuario_transacao from comunidade_do_livro.transacao where cd_transacao = ");
+        destroyCandidatos.append(transacaoId);
+        destroyCandidatos.append(") and cd_livro_transacao = ( select cd_livro_transacao from comunidade_do_livro.transacao where cd_transacao = ");
+        destroyCandidatos.append(transacaoId);
+        destroyCandidatos.append("));");
+        
         Connection conn = database.Connection.getConnection();
         Integer rs = null;
         Statement stmt = null;
@@ -677,10 +707,209 @@ public class TransacaoDAO {
             while(resSet.next()){
                 rs = resSet.getInt(1);
             }
+            
+            if(!doarSimNao){
+                stmt.executeUpdate(destroyCandidatos.toString());
+            }
+            
             return rs;
         }  catch (SQLException ex) {
             ex.printStackTrace();
             return 0;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    public boolean finalizarTransacao(int transacaoId) throws SQLException, URISyntaxException {
+        
+        String query = "update comunidade_do_livro.transacao" +
+                        " set dt_transacao_finalizada = '" + new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss").format(new Date()) + "', " +
+                        " ic_transacao_finalizada_sim_nao = true" +
+                        " where cd_transacao = " + transacaoId + " and ic_transacao_autorizada_sim_nao = true;";
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            return stmt.executeUpdate(query) > 0;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+        
+    }
+    
+    public boolean reabrirTransacao(int transacaoId) throws SQLException, URISyntaxException {
+        String query = "update comunidade_do_livro.transacao" +
+                        " set dt_transacao_finalizada = null," +
+                        " ic_transacao_finalizada_sim_nao = false" +
+                        " where cd_transacao = " + transacaoId + ";";
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            return stmt.executeUpdate(query) > 0;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    //Elege o candidato de acordo com o id do mesmo e o id da transacao
+    public String elegerCandidadoInTransacao(Integer transacaoId, Integer candidatoId) throws SQLException, URISyntaxException {
+        
+        
+        String query = "select cd_transacao, qt_livro_transacao from comunidade_do_livro.transacao" +
+                    " where cd_livro_transacao = (" +
+                    " select cd_livro_transacao" +
+                    " from comunidade_do_livro.transacao" +
+                    " where cd_transacao = " + transacaoId +
+                    " )" +
+                    " and (" +
+                    " cd_donatario_usuario_transacao = " + candidatoId +
+                    " or (" +
+                    " cd_doador_usuario_transacao = cd_usuario_cadastrante" +
+                    " and cd_donatario_usuario_transacao is null" +
+                    " )" +
+                    " )" +
+                    " order by dt_cadastro_transacao, cd_transacao;";
+        
+        
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            
+            int aux = 0, t1 = 0, t2 = 0, t2Qtd = 0, t1Qtd = 0;
+            while(rs.next()){
+                if(aux++ == 0){
+                    
+                    t1 = rs.getInt(1);
+                    t1Qtd = rs.getInt(2);
+                    
+                } else {
+                    
+                    t2 = rs.getInt(1);
+                    t2Qtd = rs.getInt(2);
+                
+                }
+            }
+            
+            if(t2Qtd <= t1Qtd){
+                String upadateAtualizaQtdTransacaoOriginal = "update comunidade_do_livro.transacao" +
+                                                                        " set qt_livro_transacao = (" +
+                                                                        " select qt_livro_transacao - " + t2Qtd +
+                                                                        " from comunidade_do_livro.transacao" +
+                                                                        " where cd_transacao = " + t1 +
+                                                                        " )" +
+                                                                        " where cd_transacao = " + t1 + ";";
+
+                conn.createStatement().executeUpdate(upadateAtualizaQtdTransacaoOriginal);
+
+                String upadateAutorizarTransacaoBranch = "update comunidade_do_livro.transacao" +
+                                                        " set ic_transacao_autorizada_sim_nao = true" +
+                                                        " where cd_transacao = " + t2 + ";";
+
+                conn.createStatement().executeUpdate(upadateAutorizarTransacaoBranch);
+
+                return "{\"success\":\"true\"}";
+            } else {
+                return "{\"erro\":\"quantidade\"}";
+            }
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return "{\"success\":\"false\"}";
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    public boolean cancelarEleicaoCandidadoInTransacao(Integer transacaoId, Integer candidatoId) throws SQLException, URISyntaxException {
+        
+        String query = "select cd_transacao, qt_livro_transacao," +
+                    " ic_transacao_finalizada_sim_nao" +
+                    " from comunidade_do_livro.transacao" +
+                    " where cd_livro_transacao = (" +
+                    " select cd_livro_transacao" +
+                    " from comunidade_do_livro.transacao" +
+                    " where cd_transacao = " + transacaoId +
+                    " )" +
+                    " and (" +
+                    " cd_donatario_usuario_transacao = " + candidatoId +
+                    " or (" +
+                    " cd_doador_usuario_transacao = cd_usuario_cadastrante" +
+                    " and cd_donatario_usuario_transacao is null" +
+                    " )" +
+                    " )" +
+                    " order by dt_cadastro_transacao, cd_transacao;";
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            
+            int aux = 0, t1 = 0, t2 = 0, t2Qtd = 0;
+            boolean isT2Finalizada = false;
+            while(rs.next()){
+                if(aux++ == 0){
+                    
+                    t1 = rs.getInt(1);
+                    
+                } else {
+                    
+                    t2 = rs.getInt(1);
+                    t2Qtd = rs.getInt(2);
+                    isT2Finalizada = rs.getBoolean(3);
+                
+                }
+            }
+            
+            if(!isT2Finalizada){
+                
+                String upadateAtualizaQtdTransacaoOriginal = "update comunidade_do_livro.transacao" +
+                                                                        " set qt_livro_transacao = (" +
+                                                                        " select qt_livro_transacao + " + t2Qtd +
+                                                                        " from comunidade_do_livro.transacao" +
+                                                                        " where cd_transacao = " + t1 +
+                                                                        " )" +
+                                                                        " where cd_transacao = " + t1 + ";";
+
+                conn.createStatement().executeUpdate(upadateAtualizaQtdTransacaoOriginal);
+
+                String upadateAutorizarTransacaoBranch = "update comunidade_do_livro.transacao" +
+                                                        " set ic_transacao_autorizada_sim_nao = false" +
+                                                        " where cd_transacao = " + t2 + ";";
+
+                conn.createStatement().executeUpdate(upadateAutorizarTransacaoBranch);
+                return true;
+                
+            } else {
+                
+                return false;
+                
+            }
+
+            
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
         }  finally {
             stmt.close();
             conn.close();
@@ -695,6 +924,22 @@ public class TransacaoDAO {
         deleteTransacao.append(transacaoId);
         deleteTransacao.append("RETURNING cd_transacao;");
         
+        StringBuilder destroyCandidatos = new StringBuilder();
+        destroyCandidatos.append("delete from comunidade_do_livro.transacao t1");
+        destroyCandidatos.append(" where t1.cd_transacao in (");
+        destroyCandidatos.append(" select t.cd_transacao");
+        destroyCandidatos.append(" from comunidade_do_livro.transacao t");
+        destroyCandidatos.append(" inner join comunidade_do_livro.usuario u on (t.cd_usuario_cadastrante = u.cd_usuario)");
+        destroyCandidatos.append(" inner join comunidade_do_livro.endereco e on (u.cd_endereco_usuario = e.cd_endereco)");
+        destroyCandidatos.append(" where t.cd_doador_usuario_transacao <> t.cd_usuario_cadastrante");
+        destroyCandidatos.append(" and t.cd_doador_usuario_transacao is not null");
+        destroyCandidatos.append(" and t.cd_donatario_usuario_transacao is not null");
+        destroyCandidatos.append(" and t.cd_doador_usuario_transacao = ( select cd_doador_usuario_transacao from comunidade_do_livro.transacao where cd_transacao = ");
+        destroyCandidatos.append(transacaoId);
+        destroyCandidatos.append(") and cd_livro_transacao = ( select cd_livro_transacao from comunidade_do_livro.transacao where cd_transacao = ");
+        destroyCandidatos.append(transacaoId);
+        destroyCandidatos.append("));");
+        
         Connection conn = database.Connection.getConnection();
         Integer rs = null;
         Statement stmt = null;
@@ -704,10 +949,84 @@ public class TransacaoDAO {
             while(resSet.next()){
                 rs = resSet.getInt(1);
             }
+            
+            stmt.executeUpdate(destroyCandidatos.toString());
+            
             return rs;
         }  catch (SQLException ex) {
             ex.printStackTrace();
             return null;
+        }  finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
+    public boolean desistirDeTransacao(int transacaoId, int candidatoId) throws URISyntaxException, SQLException {
+        
+        String query = "select cd_transacao," +
+                    " qt_livro_transacao," +
+                    " ic_transacao_autorizada_sim_nao" +
+                    " from comunidade_do_livro.transacao" +
+                    " where cd_livro_transacao = (" +
+                    " select cd_livro_transacao" +
+                    " from comunidade_do_livro.transacao" +
+                    " where cd_transacao = " + transacaoId +
+                    " )" +
+                    " and (" +
+                    " cd_donatario_usuario_transacao = " + candidatoId +
+                    " or (" +
+                    " cd_doador_usuario_transacao = cd_usuario_cadastrante" +
+                    " and cd_donatario_usuario_transacao is null" +
+                    " )" +
+                    " )" +
+                    " order by dt_cadastro_transacao, cd_transacao;";
+        
+        Connection conn = database.Connection.getConnection();
+        ResultSet rs;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            
+            int aux = 0, t1 = 0, t2 = 0, t2Qtd = 0;
+            boolean isT2Autorizada = false;
+            while(rs.next()){
+                if(aux++ == 0){
+                    
+                    t1 = rs.getInt(1);
+                    
+                } else {
+                    
+                    t2 = rs.getInt(1);
+                    t2Qtd = rs.getInt(2);
+                    isT2Autorizada = rs.getBoolean(3);
+                
+                }
+            }
+            
+            if(isT2Autorizada){
+                String upadateAtualizaQtdTransacaoOriginal = "update comunidade_do_livro.transacao" +
+                                                                        " set qt_livro_transacao = (" +
+                                                                        " select qt_livro_transacao + " + t2Qtd +
+                                                                        " from comunidade_do_livro.transacao" +
+                                                                        " where cd_transacao = " + t1 +
+                                                                        " )" +
+                                                                        " where cd_transacao = " + t1 + ";";
+
+                conn.createStatement().executeUpdate(upadateAtualizaQtdTransacaoOriginal);
+            }
+
+            StringBuilder deleteTransacaoBranch = new StringBuilder(); 
+            deleteTransacaoBranch.append("DELETE FROM comunidade_do_livro.transacao ");
+            deleteTransacaoBranch.append("where cd_transacao = ");
+            deleteTransacaoBranch.append(t2);
+            deleteTransacaoBranch.append(";");
+
+            return conn.createStatement().executeUpdate(deleteTransacaoBranch.toString()) > 0;
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
         }  finally {
             stmt.close();
             conn.close();
@@ -751,7 +1070,7 @@ public class TransacaoDAO {
         query.append(qtdLivrosCandidatados);
         query.append(",");
         query.append("ds_observacao_livro_transacao,");
-        query.append("dt_cadastro_transacao,");
+        query.append("now()::timestamp without time zone,");
         query.append("dt_transacao_finalizada");
         query.append(" from comunidade_do_livro.transacao where cd_transacao = ");
         query.append(transacaoId);

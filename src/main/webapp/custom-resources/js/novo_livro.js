@@ -135,82 +135,104 @@ $(document).ready(function() {
     $("#novo_livro_form").submit(function( event ) {
         event.preventDefault();
         
-        disableLivroFormFields(false, []);
+        var proceed = false;
+        if( $("#novo_livro_form")[0].checkValidity ){
+            if ($("#novo_livro_form")[0].checkValidity()) {
+                proceed = true;
+            }
+        }else{
+            proceed = true;
+        }
+        if (proceed) {
+            disableLivroFormFields(false, []);
         
-        //alert($("#userId").val());
-        
-        //Servico que grava a imagem no Drive
-        if($('#capaPicker').val() !== ""){
-        
-            var data = new FormData();
-            data.append('capa', jQuery('#capaPicker')[0].files[0]);
+            //alert($("#userId").val());
 
-            jQuery.ajax({
-                url: '/drive',
-                data: data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                type: 'POST',
-                success: function(data){
-                    if(!$.isEmptyObject(data)){
-                        $('#capa').val(data.link);
-                        var posting = $.post('/cadastrar_livro', $("#novo_livro_form").serialize());
-                        posting.done(function( data ) {
-                            if(data !== null && !$.isEmptyObject(data) && data.success === true){
-                                //Sucesso ao cadastrar livro
-                                //disableLivroFormFields(true, []);
-                                $('#modal_novo_livro').modal('toggle');
-                                $("#alertCadastroSucesso").alert();
-                                $("#alertCadastroSucesso").fadeTo(2000, 500).slideUp(500, function(){
-                                    $("#alertCadastroSucesso").hide();
-                                });
-                                
-                                //Insere o livro na lista 
-                                $("#filtroId").val(3);
-                                getAllTransacoesByUserWithLimit($("#userId").val(), qtdPerPage, 1, $("#filtroId").val());
-                                //getTransacaoById(data.cdTransacao, 2); //ADD
-                            } else {
-                                //Erro ao cadastrar livro
-                                $("#alertCadastroFalha").show();
-                                $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
-                                    $("#alertCadastroFalha").hide();
-                                });
-                            }
+            //Servico que grava a imagem no Drive
+            if($('#capaPicker').val() !== ""){
+
+                var data = new FormData();
+                data.append('capa', jQuery('#capaPicker')[0].files[0]);
+
+                jQuery.ajax({
+                    url: '/drive',
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    success: function(data){
+                        if(!$.isEmptyObject(data)){
+                            $('#capa').val(data.link);
+                            var posting = $.post('/cadastrar_livro', $("#novo_livro_form").serialize());
+                            posting.done(function( data ) {
+                                if(data !== null && !$.isEmptyObject(data) && data.success === true){
+                                    //Sucesso ao cadastrar livro
+                                    //disableLivroFormFields(true, []);
+                                    $('#modal_novo_livro').modal('toggle');
+                                    $("#alertCadastroSucesso").alert();
+                                    $("#alertCadastroSucesso").fadeTo(2000, 500).slideUp(500, function(){
+                                        $("#alertCadastroSucesso").hide();
+                                    });
+
+                                    //Insere o livro na lista 
+                                    $("#filtroId").val(3);
+                                    getAllTransacoesByUserWithLimit($("#userId").val(), qtdPerPage, 1, $("#filtroId").val());
+                                    //getTransacaoById(data.cdTransacao, 2); //ADD
+
+                                } else if(typeof data.erro !== 'undefined') {
+                                    if(data.erro === "japossui"){
+                                        alert("Voce ja possui este livro cadastrado!");
+                                    }
+                                } else {
+                                    //Erro ao cadastrar livro
+                                    $("#alertCadastroFalha").show();
+                                    $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
+                                        $("#alertCadastroFalha").hide();
+                                    });
+                                }
+                            });
+                        } else {
+                            //Exibir erro ao gravar a imagem
+                            $("#alertCadastroFalha").show();
+                            $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
+                                $("#alertCadastroFalha").hide();
+                            });
+                        }
+                    }
+                });        
+            } else {
+                var posting = $.post('/cadastrar_livro', $("#novo_livro_form").serialize());
+
+                posting.done(function( data ) {
+                    if(data !== null && !$.isEmptyObject(data) && data.success === true){
+                        //Verifica o retorno da API sobre o retorno
+                        //disableLivroFormFields(true, []);
+                        $("#alertCadastroSucesso").alert();
+                        $("#alertCadastroSucesso").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#alertCadastroSucesso").hide();
                         });
+                        $('#modal_novo_livro').modal('toggle');
+
+                        //Insere o livro na lista
+                        $("#filtroId").val(3);
+                        getAllTransacoesByUserWithLimit($("#userId").val(), qtdPerPage, 1, $("#filtroId").val()); 
+                        //getTransacaoById(data.cdTransacao, 2); //ADD
+
+                    } else if(typeof data.erro !== 'undefined') {
+                        if(data.erro === "japossui"){
+                            alert("Voce ja possui este livro cadastrado!");
+                        }
                     } else {
-                        //Exibir erro ao gravar a imagem
                         $("#alertCadastroFalha").show();
                         $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
                             $("#alertCadastroFalha").hide();
                         });
                     }
-                }
-            });        
+                });
+            }
         } else {
-            var posting = $.post('/cadastrar_livro', $("#novo_livro_form").serialize());
-        
-            posting.done(function( data ) {
-                if(data !== null && !$.isEmptyObject(data) && data.success === true){
-                    //Verifica o retorno da API sobre o retorno
-                    //disableLivroFormFields(true, []);
-                    $("#alertCadastroSucesso").alert();
-                    $("#alertCadastroSucesso").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#alertCadastroSucesso").hide();
-                    });
-                    $('#modal_novo_livro').modal('toggle');
-                    
-                    //Insere o livro na lista
-                    $("#filtroId").val(3);
-                    getAllTransacoesByUserWithLimit($("#userId").val(), qtdPerPage, 1, $("#filtroId").val()); 
-                    //getTransacaoById(data.cdTransacao, 2); //ADD
-                } else {
-                    $("#alertCadastroFalha").show();
-                    $("#alertCadastroFalha").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#alertCadastroFalha").hide();
-                    });
-                }
-            });
+            alert("Verificar os campos!");
         }
         
         /*var posting = $.post('/cadastrar_livro', $("#novo_livro_form").serialize());

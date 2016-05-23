@@ -1,3 +1,5 @@
+<%@ page import="com.google.gson.JsonObject" %>
+<%@ page import="com.google.gson.JsonParser" %>
 <%@ page import="model.User" %>
 <%@ page import="model.Endereco" %>
 
@@ -19,7 +21,7 @@
             e.setCidade(request.getParameter("endereco[cidade]"));
             e.setEstado(request.getParameter("endereco[estado]"));
             e.setNumero(Integer.parseInt(request.getParameter("endereco[numero]")));
-            e.setRua(request.getParameter("rua"));
+            e.setRua(request.getParameter("endereco[rua]"));
 
             //Carrega as configuracoes de usuario
             u.setId(Integer.parseInt(request.getParameter("id")));
@@ -36,6 +38,47 @@
             u.setTelefone(request.getParameter("telefone"));
 
             session.setAttribute("user", u);
+        } else if(userInfo == null && (String)request.getAttribute("userJson") != null) {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse((String)request.getAttribute("userJson")).getAsJsonObject();
+            JsonObject end = obj.getAsJsonObject("endereco");
+            
+            Endereco e = new Endereco();
+            User u = new User();
+            
+            //Seta o endereco
+            e.setBairro(end.get("bairro").toString());
+            e.setCep(end.get("cep").toString());
+            e.setCidade(end.get("cidade").toString());
+            e.setEstado(end.get("estado").toString());
+            e.setNumero(Integer.parseInt(end.get("numero").toString()));
+            e.setRua(end.get("rua").toString());
+
+            //Carrega as configuracoes de usuario
+            u.setId(Integer.parseInt(obj.get("id").toString()));
+            u.setCelular(obj.get("celular").toString());
+            try{
+                u.setCnpj(obj.get("cnpj").toString());
+            } catch(Exception ex) {
+                u.setCnpj("");
+            }
+            try{
+                u.setCpf(obj.get("cpf").toString());
+            } catch(Exception ex) {
+                u.setCpf("");
+            }
+            u.setEmail(obj.get("email").toString());
+            u.setEndereco(e);
+            u.setIsAdmin(Boolean.parseBoolean(obj.get("isAdmin").toString()));
+            u.setIsAtivo(Boolean.parseBoolean(obj.get("isAtivo").toString()));
+            u.setLogin(obj.get("login").toString());
+            u.setName(obj.get("name").toString());
+            u.setSenha(obj.get("senha").toString());
+            u.setTelefone(obj.get("telefone").toString());
+
+            session.setAttribute("user", u);
+            
+            response.sendRedirect("/index.jsp");
         }%>
 <!DOCTYPE html>
 <html lang="pt-br">

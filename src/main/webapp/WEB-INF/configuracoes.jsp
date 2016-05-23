@@ -1,4 +1,5 @@
 <%@ page import="model.User" %>
+<%@ page import="model.Endereco" %>
 <%
     if(request.getParameter("pick") != null && request.getParameter("pick").equals("sair")){
         session.removeAttribute("user");
@@ -6,7 +7,48 @@
     
     User user = null;
     if(session.getAttribute("user") != null){
-        user = ((User)session.getAttribute("user"));
+        if(request.getParameter("userId") != null){
+            session.removeAttribute("user");
+            Endereco e = new Endereco();
+            user = new User();
+            
+            //Seta o endereco
+            e.setBairro(request.getParameter("bairro"));
+            e.setCep(request.getParameter("cep"));
+            e.setCidade(request.getParameter("cidade"));
+            e.setEstado(request.getParameter("uf"));
+            e.setNumero(Integer.parseInt(request.getParameter("numero")));
+            e.setRua(request.getParameter("rua"));
+
+            //Carrega as configuracoes de usuario
+            user.setId(Integer.parseInt(request.getParameter("userId")));
+            user.setCelular(request.getParameter("cel"));
+            
+            if(request.getParameter("cpfOrCnpjString").equals("cnpj")){
+                user.setCnpj(request.getParameter("cpfOrCnpj"));
+            } else {
+                user.setCnpj(null);
+            }
+            
+            if(request.getParameter("cpfOrCnpjString").equals("cpf")){
+                user.setCpf(request.getParameter("cpfOrCnpj"));
+            } else {
+                user.setCpf(null);
+            }
+            
+            user.setEmail(request.getParameter("userEmail"));
+            user.setEndereco(e);
+            user.setIsAdmin(false);
+            user.setIsAtivo(true);
+            user.setLogin(request.getParameter("userLogin"));
+            user.setName(request.getParameter("name"));
+            user.setSenha(request.getParameter("signInPassword"));
+            user.setTelefone(request.getParameter("tel"));
+
+            session.setAttribute("user", user);
+        } else {
+            user = ((User)session.getAttribute("user"));
+        }
 %>
 <link rel="stylesheet" type="text/css" href="bootstrap-3.3.6-dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="custom-resources/css/general.css">
@@ -23,7 +65,9 @@
                       <h3 class="panel-title">Configuração de Perfil</h3>
                     </div>
                     <div class="panel-body">
-                        <form id="signUpForm" method="post" action=""/>
+                        <form id="signUpForm"/>
+                            <input type="hidden" id="userId" name="userId" value="<%= user.getId() %>"/>
+                            <input type="hidden" id="cpfOrCnpjString" name="cpfOrCnpjString" value="<%= user.getCpf() != null ? "cpf" : "cnpj" %>"/>
                             <legend>Cadastro Básico</legend>
                              <fieldset class="form-group">
                                 <label for="login">Eu sou uma: </label>
@@ -54,16 +98,16 @@
                             </fieldset>
                             <fieldset class="form-group">
                               <label for="signInPassword">Senha <span style="color: red">*</span></label>
-                              <input type="password" class="form-control" id="signInPassword" name="signInPassword" placeholder="Senha" required value=""/>
+                              <input type="password" class="form-control" id="signInPassword" name="signInPassword" placeholder="Senha" required value="" pattern=".{6,}" />
                             </fieldset>
                             <fieldset class="form-group">
                               <label for="signInPassword2">Confirmação da senha <span style="color: red">*</span></label>
-                              <input type="password" class="form-control" id="signInPassword2" name="signInPassword2" placeholder="Senha" required/>
+                              <input type="password" class="form-control" id="signInPassword2" name="signInPassword2" placeholder="Senha" required pattern=".{6,}" />
                             </fieldset>
                             <legend>Cadastro Avançado</legend>
                             <fieldset class="form-group">
                                 <label id="lblCpfOrCnpj" for="cpfOrCnpj"></label>
-                              <input type="text" class="form-control" id="cpfOrCnpj" name="cpfOrCnpj" placeholder="" />
+                                <input type="text" class="form-control" id="cpfOrCnpj" name="cpfOrCnpj" placeholder="" value="<%= user.getCpf() != null ? user.getCpf() : user.getCnpj() %>" />
                             </fieldset>
                             <fieldset class="form-group col-xs-6" style="padding: 0;">
                                 <label for="tel">Telefone</label>
@@ -91,11 +135,11 @@
                             </fieldset>
                             <fieldset class="form-group col-xs-10" style="padding: 0;">
                                 <label for="cidade">Cidade</label>
-                                <input type="text" class="form-control" id="cidade" name="cidade" size="40" value="<%= user.getEndereco().getEstado() != null ? user.getEndereco().getEstado() : "" %>"/>
+                                <input type="text" class="form-control" id="cidade" name="cidade" size="40" value="<%= user.getEndereco().getCidade() != null ? user.getEndereco().getCidade() : "" %>"/>
                             </fieldset>
                             <fieldset class="form-group col-xs-2">
                                 <label for="uf">Estado</label>
-                                <input type="text" class="form-control" id="uf" name="uf" size="2" value="<%= user.getEndereco().getCidade() != null ? user.getEndereco().getCidade() : "" %>"/>
+                                <input type="text" class="form-control" id="uf" name="uf" size="2" value="<%= user.getEndereco().getEstado() != null ? user.getEndereco().getEstado() : "" %>"/>
                             </fieldset>
                             <p class="col-xs-12" style="text-align: center;"><button type="submit" class="btn btn-primary" id="btnSalvarAlteracoes">Salvar Alterações</button></p>
                         </form>

@@ -72,6 +72,7 @@ $(document).ready(function(){
            mascaraCnpj();
         }   
     });
+
     //Insere mascara para o CPF
     function mascaraCpf(){
        $('#cpfOrCnpj').bind('keypress', function (event){//ao pressionar o teclado no campo cpfOrCnpj, aciona a função
@@ -131,27 +132,6 @@ $(document).ready(function(){
         });
     };
     
-    /*
-    //Altera o form exibido conforme o link de logar/cadastrar e clicado 
-    $("#signInOrUp").text("Clique para se cadastrar");
-    $("#signInUpFormTitle").text("Faça o login");
-    $("#signInOrUp").click(function(){
-        if($("#signInForm").css("display") != "none"){
-            $("#signInUpFormTitle").text("Faça o cadastro");
-            $("#signInOrUp").text("Clique para fazer o login");
-            $("#signInForm").css("display","none");
-            $("#signUpForm").css("display","inline");
-            limparCampos();
-        } else {
-            $("#signInUpFormTitle").text("Faça o login");
-            $("#signInOrUp").text("Clique para se cadastrar");
-            $("#signInForm").css("display","inline");
-            $("#signUpForm").css("display","none");
-            limparCampos();
-        }
-    })
-    
-    
     /*Valida o campo name conforme o banco*/
     $('#name').bind('keypress', function (event){//ao pressionar o teclado no camo name, aciona a função
        var validacaracter = /^[a-zA-Z \b]$/;// new RegExp("^[a-zA-Z \b]+$") constroi a expressao regular que identifica letra e espaço
@@ -165,10 +145,6 @@ $(document).ready(function(){
         return false;
         }
     });
-
-    
-    
-    
     
     /*PREECHIMENTO DO ENDERECO PELO CEP*/
     function limpa_formulario_cep() {
@@ -229,7 +205,42 @@ $(document).ready(function(){
             limpa_formulario_cep();
         }
     })
+
+    //Intercepta o botao cadastrar usuario
+    $('#btnCadastrarUsuario').on("click",function(event) {
+        if($("#signInPassword").val().length >= 6 && $("#signInPassword2").val().length >= 6){
+            if(!($("#signInPassword").val() === $("#signInPassword2").val())){
+                alert("As senhas nao conferem!");
+                event.preventDefault();
+            }
+        } else {
+            alert("As senha deve conter 6 caracteres no minimo!");
+            event.preventDefault();
+        }
+    }); 
     
+    $('#btnSalvarAlteracoes').on("click",function() {
+        if($("#signInPassword").val().length >= 6 && $("#signInPassword2").val().length >= 6){
+            if(!($("#signInPassword").val() === $("#signInPassword2").val())){
+                alert("As senhas nao conferem!");
+                event.preventDefault();
+            } else {
+                var posting = $.post('/cadastrarUsuario', $("#signUpForm").serialize());
+
+                posting.done(function( data ) {
+                    if(data.success){
+                        alert("As alteracoes foram feitas com sucesso!");
+                    } else {
+                        alert("Ocorreu uma falha ao alterar perfil!");
+                    }
+                });
+            }
+        } else {
+            alert("As senha deve conter 6 caracteres no minimo!");
+            event.preventDefault();
+        }
+    }); 
+
  });
  
 

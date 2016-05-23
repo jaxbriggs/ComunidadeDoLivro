@@ -122,30 +122,30 @@
                       <input type="text" class="form-control" id="cel" name="cel" placeholder="Digite o celular"/>
                     </fieldset>
                     <fieldset class="form-group col-xs-12" style="padding: 0;">
-                        <label for="cep">CEP</label>
-                      <input type="text" class="form-control" id="cep" name="cep" placeholder="Digite o cep"/>
+                        <label for="cep">CEP <span style="color: red">*</span></label>
+                      <input type="text" class="form-control" id="cep" name="cep" placeholder="Digite o cep" required/>
                     </fieldset>
                     <fieldset class="form-group col-xs-9" style="padding: 0;">
-                        <label for="rua">Rua</label>
-                        <input type="text" class="form-control" id="rua" name="rua" size="60"/>
+                        <label for="rua">Rua <span style="color: red">*</span></label>
+                        <input type="text" class="form-control" id="rua" name="rua" size="60" required/>
                     </fieldset>
                     <fieldset class="form-group col-xs-3" style="padding: 0 2%;">
-                        <label for="numero">Número</label>
-                        <input type="number" class="form-control" id="numero" name="numero" size="60"/>
+                        <label for="numero">Número <span style="color: red">*</span></label>
+                        <input type="number" class="form-control" id="numero" name="numero" size="60" required/>
                     </fieldset>
                     <fieldset class="form-group col-xs-12" style="padding: 0;">
-                        <label for="bairro">Bairro</label>
-                        <input type="text" class="form-control" id="bairro" name="bairro" size="40"/>
+                        <label for="bairro">Bairro <span style="color: red">*</span></label>
+                        <input type="text" class="form-control" id="bairro" name="bairro" size="40" required/>
                     </fieldset>
                     <fieldset class="form-group col-xs-10" style="padding: 0;">
-                        <label for="cidade">Cidade</label>
-                        <input type="text" class="form-control" id="cidade" name="cidade" size="40"/>
+                        <label for="cidade">Cidade <span style="color: red">*</span></label>
+                        <input type="text" class="form-control" id="cidade" name="cidade" size="40" required/>
                     </fieldset>
                     <fieldset class="form-group col-xs-2">
-                        <label for="uf">Estado</label>
-                        <input type="text" class="form-control" id="uf" name="uf" size="2"/>
+                        <label for="uf">Estado <span style="color: red">*</span></label>
+                        <input type="text" class="form-control" id="uf" name="uf" size="2" required/>
                     </fieldset>
-                    <p class="col-xs-12" style="text-align: center;"><button type="submit" class="btn btn-primary">Cadastrar</button></p>
+                    <p class="col-xs-12" style="text-align: center;"><button type="submit" class="btn btn-primary" id="btnCadastrarUsuario">Cadastrar</button></p>
                 </form>
             </div>            
           </div>
